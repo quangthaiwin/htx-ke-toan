@@ -31,13 +31,24 @@ export async function middleware(request: NextRequest) {
 
   const isAuthRoute = request.nextUrl.pathname.startsWith("/login");
   const isApiRoute = request.nextUrl.pathname.startsWith("/api");
+  const isHealthRoute = request.nextUrl.pathname === "/api/health";
 
+  // API routes: trả 401 JSON nếu chưa xác thực (trừ health check)
+  if (!user && isApiRoute && !isHealthRoute) {
+    return NextResponse.json(
+      { error: "UNAUTHORIZED", message: "Vui lòng đăng nhập" },
+      { status: 401 },
+    );
+  }
+
+  // Page routes: redirect về login nếu chưa xác thực
   if (!user && !isAuthRoute && !isApiRoute) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     return NextResponse.redirect(url);
   }
 
+  // Đã đăng nhập mà vào login → redirect về trang chủ
   if (user && isAuthRoute) {
     const url = request.nextUrl.clone();
     url.pathname = "/";

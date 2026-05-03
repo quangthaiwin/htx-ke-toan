@@ -7,6 +7,17 @@ const prisma = new PrismaClient();
 const TENANT_ID = process.env.TENANT_ID ?? "HTX_DEFAULT";
 
 export async function POST() {
+  // Guard: chỉ cho phép seed trong môi trường development hoặc khi chưa có dữ liệu
+  if (
+    process.env.NODE_ENV === "production" &&
+    process.env.ALLOW_SEED !== "true"
+  ) {
+    return NextResponse.json(
+      { error: "FORBIDDEN", message: "Seed không khả dụng trong production" },
+      { status: 403 },
+    );
+  }
+
   try {
     const existing = await prisma.account.count({
       where: { tenantId: TENANT_ID },
