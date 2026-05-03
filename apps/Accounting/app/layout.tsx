@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "VietERP Kế toán",
-  description: "Phần mềm kế toán VAS/TT200 cho HTX",
+  title: "HTX Farm-Kế Toán",
+  description: "Phần mềm kế toán VAS/TT200 cho HTX nông nghiệp",
 };
 
 export default function RootLayout({

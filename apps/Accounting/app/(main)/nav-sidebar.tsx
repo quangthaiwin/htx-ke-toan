@@ -76,15 +76,19 @@ export function NavSidebar() {
     <nav className="flex-1 px-3 py-4 overflow-y-auto space-y-0.5">
       {NAV.map((entry) => {
         if (!isGroup(entry)) {
+          const active = isActive(entry.href);
           return (
             <Link
               key={entry.href}
               href={entry.href}
-              className={`flex items-center gap-2.5 px-3 py-2 text-sm rounded-lg transition-colors ${
-                isActive(entry.href)
-                  ? "bg-blue-50 text-blue-700 font-medium"
-                  : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
-              }`}
+              className="flex items-center gap-2.5 px-3 py-2 text-sm rounded-lg transition-colors"
+              style={{
+                backgroundColor: active
+                  ? "rgba(201,168,76,0.15)"
+                  : "transparent",
+                color: active ? "#C9A84C" : "#B8C4D8",
+                fontWeight: active ? 600 : 400,
+              }}
             >
               <span className="text-base leading-none">{entry.icon}</span>
               {entry.label}
@@ -97,26 +101,39 @@ export function NavSidebar() {
         return (
           <div key={entry.group}>
             <div
-              className={`flex items-center gap-2.5 px-3 py-1.5 text-xs font-semibold uppercase tracking-wide mt-3 mb-0.5 ${
-                groupActive ? "text-blue-600" : "text-gray-400"
-              }`}
+              className="flex items-center gap-2 px-3 py-1.5 text-xs font-semibold uppercase tracking-wider mt-3 mb-0.5"
+              style={{ color: groupActive ? "#C9A84C" : "#4A5A7A" }}
             >
               <span className="text-sm leading-none">{entry.icon}</span>
               {entry.group}
             </div>
-            {entry.items.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`flex items-center gap-2.5 pl-8 pr-3 py-1.5 text-sm rounded-lg transition-colors ${
-                  isActive(item.href)
-                    ? "bg-blue-50 text-blue-700 font-medium"
-                    : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
-                }`}
-              >
-                {item.label}
-              </Link>
-            ))}
+            {entry.items.map((item) => {
+              const active = isActive(item.href);
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="flex items-center gap-2.5 pl-8 pr-3 py-1.5 text-sm rounded-lg transition-colors"
+                  style={{
+                    backgroundColor: active
+                      ? "rgba(201,168,76,0.15)"
+                      : "transparent",
+                    color: active ? "#C9A84C" : "#8A9AB8",
+                    fontWeight: active ? 600 : 400,
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!active)
+                      (e.currentTarget as HTMLElement).style.color = "#C9A84C";
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!active)
+                      (e.currentTarget as HTMLElement).style.color = "#8A9AB8";
+                  }}
+                >
+                  {item.label}
+                </Link>
+              );
+            })}
           </div>
         );
       })}
