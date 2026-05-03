@@ -1,0 +1,69 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "provider": {
+    "qualo": {
+      "name": "QuaLo (OpenAI)",
+      "npm": "@ai-sdk/openai-compatible",
+      "options": {
+        "apiKey": "sk-ant-bb643764410637039963e811292e195b53dbe07e9bacce8c10f311682a9a28c2",
+        "baseURL": "https://llm.qualo.xyz/v1"
+      },
+      "models": {
+        "gpt-5.4": {
+          "name": "GPT-5.4",
+          "limit": { "context": 200000, "output": 64000 },
+          "modalities": {
+            "input": ["text", "image", "pdf"],
+            "output": ["text"]
+          },
+          "reasoning": true,
+          "options": { "reasoningEffort": "xhigh" },
+          "tool_call": true,
+          "attachment": true
+        }
+      }
+    },
+    "qualo-anthropic": {
+      "name": "QuaLo (Anthropic)",
+      "npm": "@ai-sdk/anthropic",
+      "options": {
+        "apiKey": "sk-ant-bb643764410637039963e811292e195b53dbe07e9bacce8c10f311682a9a28c2",
+        "baseURL": "https://llm.qualo.xyz/v1"
+      },
+      "models": {
+        "claude-opus-4-6": {
+          "name": "Claude Opus 4.6",
+          "limit": { "context": 200000, "output": 64000 },
+          "modalities": {
+            "input": ["text", "image", "pdf"],
+            "output": ["text"]
+          },
+          "reasoning": true,
+          "tool_call": true,
+          "attachment": true
+        },
+        "claude-sonnet-4-6": {
+          "name": "Claude Sonnet 4.6",
+          "limit": { "context": 200000, "output": 32000 },
+          "modalities": {
+            "input": ["text", "image", "pdf"],
+            "output": ["text"]
+          },
+          "reasoning": true,
+          "tool_call": true,
+          "attachment": true
+        },
+        "claude-haiku-4-5": {
+          "name": "Claude Haiku 4.5",
+          "limit": { "context": 144000, "output": 32000 },
+          "modalities": {
+            "input": ["text", "image", "pdf"],
+            "output": ["text"]
+          },
+          "reasoning": true,
+          "tool_call": true
+        }
+      }
+    }
+  }
+}

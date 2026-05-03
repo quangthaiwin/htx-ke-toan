@@ -24,4 +24,4 @@ Key routing rules:
 - Setup date: 2026-05-03
 - MCP registered: yes (user scope, C:/Users/thaip/.bun/bin/gbrain serve)
 - Memory sync: off
-- Current repo policy: unset
+- Current repo policy: include
