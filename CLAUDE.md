@@ -1,9 +1,9 @@
-
 ## Skill routing
 
 When the user's request matches an available skill, invoke it via the Skill tool. When in doubt, invoke the skill.
 
 Key routing rules:
+
 - Product ideas/brainstorming → invoke /office-hours
 - Strategy/scope → invoke /plan-ceo-review
 - Architecture → invoke /plan-eng-review
@@ -16,3 +16,12 @@ Key routing rules:
 - Ship/deploy/PR → invoke /ship or /land-and-deploy
 - Save progress → invoke /context-save
 - Resume context → invoke /context-restore
+
+## GBrain Configuration (configured by /setup-gbrain)
+
+- Engine: postgres
+- Config file: ~/.gbrain/config.json (mode 0600)
+- Setup date: 2026-05-03
+- MCP registered: yes (user scope, C:/Users/thaip/.bun/bin/gbrain serve)
+- Memory sync: off
+- Current repo policy: unset
