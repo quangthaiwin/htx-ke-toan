@@ -2,6 +2,48 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Print styles for reports */
+@media print {
+  nav,
+  aside,
+  button,
+  [data-hide-print],
+  .no-print {
+    display: none !important;
+  }
+
+  main {
+    margin: 0 !important;
+    padding: 0 !important;
+    max-width: 100% !important;
+  }
+
+  body {
+    background: white !important;
+    font-size: 11pt !important;
+  }
+
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: 9pt;
+  }
+
+  th, td {
+    border: 0.5pt solid #333;
+    padding: 4pt 6pt;
+  }
+
+  thead {
+    display: table-header-group;
+  }
+
+  @page {
+    margin: 2cm;
+    size: A4;
+  }
+}
+
 @layer base {
   body {
     @apply bg-gray-50 text-gray-800 antialiased;

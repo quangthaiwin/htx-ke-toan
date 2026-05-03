@@ -1,0 +1,68 @@
+/* Print styles for financial reports */
+@media print {
+  /* Hide navigation, sidebar, buttons */
+  nav,
+  aside,
+  button,
+  [data-hide-print],
+  .no-print {
+    display: none !important;
+  }
+
+  /* Full width layout */
+  main {
+    margin: 0 !important;
+    padding: 0 !important;
+    max-width: 100% !important;
+  }
+
+  /* Remove backgrounds and borders */
+  body {
+    background: white !important;
+    font-size: 11pt !important;
+  }
+
+  /* Table styles for clean printing */
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: 9pt;
+  }
+
+  th, td {
+    border: 0.5pt solid #333;
+    padding: 4pt 6pt;
+  }
+
+  thead {
+    display: table-header-group;
+  }
+
+  /* Page breaks */
+  .print\\:break-inside-avoid {
+    break-inside: avoid;
+  }
+
+  .print\\:break-before-page {
+    break-before: page;
+  }
+
+  /* Report header */
+  h1 {
+    font-size: 16pt;
+    text-align: center;
+    margin-bottom: 12pt;
+  }
+
+  /* Page margins */
+  @page {
+    margin: 2cm;
+    size: A4;
+  }
+
+  /* Monospace numbers */
+  .font-mono {
+    font-family: "Courier New", monospace;
+    font-size: 9pt;
+  }
+}
