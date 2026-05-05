@@ -96,8 +96,8 @@ export function CostBreakdown({
               axisLine={false}
             />
             <Tooltip
-              formatter={(value: number) => [
-                `${fmtVND(value)} (${((value / totalExpense) * 100).toFixed(1)}%)`,
+              formatter={(value) => [
+                `${fmtVND(value as number)} (${(((value as number) / totalExpense) * 100).toFixed(1)}%)`,
                 "Chi phí",
               ]}
               labelStyle={{ fontWeight: 600, fontSize: 12 }}

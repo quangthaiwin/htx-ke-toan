@@ -66,7 +66,7 @@ export function PLChart({ periods, annotation }: PLChartProps) {
               axisLine={false}
             />
             <Tooltip
-              formatter={(value: number) => fmtTooltip(value)}
+              formatter={(value) => fmtTooltip(value as number)}
               labelStyle={{ fontWeight: 600 }}
             />
             <Legend wrapperStyle={{ fontSize: 12 }} />
