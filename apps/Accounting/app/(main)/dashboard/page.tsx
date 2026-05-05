@@ -1,9 +1,8 @@
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 
 export const dynamic = "force-dynamic";
 
-const prisma = new PrismaClient();
 const TENANT_ID = process.env.TENANT_ID ?? "HTX_DEFAULT";
 
 function fmt(n: number) {
@@ -71,8 +70,6 @@ export default async function DashboardPage() {
   const draftCount = await prisma.journalEntry.count({
     where: { tenantId: TENANT_ID, status: "DRAFT" },
   });
-
-  await prisma.$disconnect();
 
   // Compute balances
   const sumDebit = (lines: { debitAmount: unknown }[]) =>

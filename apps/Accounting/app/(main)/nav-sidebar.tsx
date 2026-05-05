@@ -14,6 +14,7 @@ function isGroup(entry: NavEntry): entry is NavGroup {
 
 const NAV: NavEntry[] = [
   { label: "Tổng quan", href: "/dashboard", icon: "📊" },
+  { label: "KQKD Dashboard", href: "/dashboard/kqkd", icon: "📉" },
   {
     group: "Tiền mặt & Ngân hàng",
     icon: "💵",

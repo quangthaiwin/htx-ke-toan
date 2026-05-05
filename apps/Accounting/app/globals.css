@@ -38,8 +38,36 @@
     display: table-header-group;
   }
 
+  /* KQKD Dashboard specific */
+  .print\:hidden {
+    display: none !important;
+  }
+
+  .print\:block {
+    display: block !important;
+  }
+
+  .print\:space-y-4 > :not([hidden]) ~ :not([hidden]) {
+    margin-top: 1rem;
+  }
+
+  /* Charts: ensure they render at full width */
+  .recharts-responsive-container {
+    page-break-inside: avoid;
+  }
+
+  /* Cards: avoid breaking across pages */
+  .rounded-xl {
+    break-inside: avoid;
+  }
+
+  /* Sidebar removal for ML override */
+  main {
+    margin-left: 0 !important;
+  }
+
   @page {
-    margin: 2cm;
+    margin: 1.5cm;
     size: A4;
   }
 }

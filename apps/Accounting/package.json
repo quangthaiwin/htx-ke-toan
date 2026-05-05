@@ -21,21 +21,23 @@
     "db:seed": "npx ts-node prisma/seed.ts"
   },
   "dependencies": {
-    "@vierp/shared": "*",
-    "@vierp/database": "*",
+    "@prisma/client": "^5.14.0",
+    "@supabase/ssr": "^0.4.0",
+    "@supabase/supabase-js": "^2.43.0",
     "@vierp/auth": "*",
+    "@vierp/database": "*",
     "@vierp/events": "*",
     "@vierp/feature-flags": "*",
     "@vierp/master-data": "*",
-    "@prisma/client": "^5.14.0",
-    "@supabase/supabase-js": "^2.43.0",
-    "@supabase/ssr": "^0.4.0",
+    "@vierp/shared": "*",
+    "date-fns": "^3.6.0",
+    "decimal.js": "^10.4.3",
+    "lucide-react": "^0.564.0",
     "next": "^14.2.0",
     "react": "^18.3.0",
     "react-dom": "^18.3.0",
-    "zod": "^3.23.0",
-    "decimal.js": "^10.4.3",
-    "date-fns": "^3.6.0"
+    "recharts": "^3.8.1",
+    "zod": "^3.23.0"
   },
   "devDependencies": {
     "@playwright/test": "^1.58.2",
@@ -43,9 +45,9 @@
     "@types/react": "^18.3.0",
     "autoprefixer": "^10.4.19",
     "postcss": "^8.4.38",
+    "prisma": "^5.14.0",
     "tailwindcss": "^3.4.4",
     "typescript": "^5.4.0",
-    "prisma": "^5.14.0",
     "vitest": "^1.6.0"
   }
 }

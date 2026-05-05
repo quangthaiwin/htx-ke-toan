@@ -1,13 +1,17 @@
 import { NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
-import Decimal from "decimal.js";
+import { prisma } from "@/lib/prisma";
 
-const prisma = new PrismaClient();
 const TENANT_ID = process.env.TENANT_ID ?? "HTX_DEFAULT";
 
 /**
  * GET /api/reports/income-statement?from=YYYY-MM-DD&to=YYYY-MM-DD
  * Báo cáo kết quả hoạt động kinh doanh (B02-DN)
+ *
+ * Mapping chi phí sản xuất cho HTX nuôi tôm:
+ * - 621: Chi phí NVL trực tiếp (thức ăn, con giống)
+ * - 622: Chi phí nhân công trực tiếp (lương, công nhật)
+ * - 627: Chi phí sản xuất chung (thuốc, hạ tầng, dịch vụ, IoT...)
+ * Tổng 621+622+627 = Giá vốn hàng bán (tương đương 632 sau kết chuyển)
  */
 export async function GET(request: Request) {
   try {
@@ -18,7 +22,7 @@ export async function GET(request: Request) {
     const fromDate = new Date(fromStr);
     const toDate = new Date(toStr);
 
-    // Lấy journal lines trong kỳ
+    // Lấy journal lines trong kỳ (chỉ bút toán đã ghi sổ)
     const journalLines = await prisma.journalLine.findMany({
       where: {
         tenantId: TENANT_ID,
@@ -45,15 +49,28 @@ export async function GET(request: Request) {
         .reduce((sum, l) => sum + Number(l.creditAmount), 0);
     };
 
+    // === DOANH THU ===
     const grossRevenue = getPeriodCredit("511");
     const revenueDeductions = getPeriodDebit("521");
     const netRevenue = grossRevenue - revenueDeductions;
 
-    const costOfGoodsSold = getPeriodDebit("632");
+    // === GIÁ VỐN HÀNG BÁN ===
+    // Theo VAS: GVHB = 632 (sau kết chuyển cuối kỳ)
+    // Thực tế HTX: chưa kết chuyển, chi phí SX nằm tại 621/622/627
+    // => Tính GVHB = 632 + 621 + 622 + 627 (bao gồm cả trường hợp đã kết chuyển và chưa)
+    const costOfGoodsSold =
+      getPeriodDebit("632") + // Giá vốn (nếu đã kết chuyển)
+      getPeriodDebit("621") + // Chi phí NVL trực tiếp
+      getPeriodDebit("622") + // Chi phí nhân công trực tiếp
+      getPeriodDebit("627"); // Chi phí sản xuất chung
+
     const grossProfit = netRevenue - costOfGoodsSold;
 
+    // === THU NHẬP & CHI PHÍ TÀI CHÍNH ===
     const financialIncome = getPeriodCredit("515");
     const financialExpenses = getPeriodDebit("635");
+
+    // === CHI PHÍ BÁN HÀNG & QUẢN LÝ ===
     const sellingExpenses = getPeriodDebit("641");
     const adminExpenses = getPeriodDebit("642");
 
@@ -64,6 +81,7 @@ export async function GET(request: Request) {
       sellingExpenses -
       adminExpenses;
 
+    // === THU NHẬP & CHI PHÍ KHÁC ===
     const otherIncome = getPeriodCredit("711");
     const otherExpenses = getPeriodDebit("811");
     const otherProfit = otherIncome - otherExpenses;
@@ -76,19 +94,31 @@ export async function GET(request: Request) {
       data: {
         periodStart: fromStr,
         periodEnd: toStr,
+        // Doanh thu
         grossRevenue,
         revenueDeductions,
         netRevenue,
+        // Giá vốn (chi tiết)
         costOfGoodsSold,
+        directMaterials: getPeriodDebit("621"),
+        directLabor: getPeriodDebit("622"),
+        manufacturingOverhead: getPeriodDebit("627"),
+        costOfGoodsSoldClosed: getPeriodDebit("632"),
+        // Lợi nhuận gộp
         grossProfit,
+        // Tài chính
         financialIncome,
         financialExpenses,
+        // Bán hàng & quản lý
         sellingExpenses,
         adminExpenses,
+        // Lợi nhuận thuần từ HĐKD
         operatingProfit,
+        // Khác
         otherIncome,
         otherExpenses,
         otherProfit,
+        // Kết quả
         profitBeforeTax,
         citExpense,
         netProfit,
@@ -99,7 +129,5 @@ export async function GET(request: Request) {
       { error: err instanceof Error ? err.message : "Lỗi server" },
       { status: 500 },
     );
-  } finally {
-    await prisma.$disconnect();
   }
 }
