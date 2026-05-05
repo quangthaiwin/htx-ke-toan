@@ -1,6 +1,5 @@
 {
   "framework": "nextjs",
   "installCommand": "cd ../.. && npm install --legacy-peer-deps",
-  "buildCommand": "npx prisma generate && next build",
-  "ignoreCommand": "git diff HEAD^ HEAD --quiet -- ."
+  "buildCommand": "npx prisma generate && next build"
 }
