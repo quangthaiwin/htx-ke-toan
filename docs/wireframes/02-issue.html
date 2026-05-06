@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wireframe — Xuất Kho</title>
+<link href="https://fonts.googleapis.com/css2?family=Architects+Daughter&family=Caveat:wght@400;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Architects Daughter', cursive; background: #f9f7f2; color: #2d2d2d; padding: 16px; min-height: 100vh; }
+.page-header h1 { font-family: 'Caveat', cursive; font-size: 2rem; font-weight: 700; display: inline-block; }
+.version-tag { display: inline-block; border: 2px dashed #666; padding: 2px 8px; font-size: 0.7rem; font-family: monospace; transform: rotate(-2deg); margin-left: 12px; }
+.subtitle { font-style: italic; color: #555; font-size: 0.9rem; margin-top: 4px; }
+.dateline { font-family: monospace; font-size: 0.7rem; color: #888; text-align: right; }
+.tab-strip { display: flex; gap: 6px; margin: 12px 0; overflow-x: auto; }
+.tab { padding: 6px 12px; border-radius: 4px; font-size: 0.8rem; cursor: pointer; white-space: nowrap; }
+.tab.active { background: linear-gradient(135deg, #fff3a0 0%, #ffe066 100%); transform: rotate(-0.5deg); font-weight: bold; }
+.tab:not(.active) { background: #eee; color: #666; }
+.sketch-canvas { background: #fff; border: 3px solid #333; border-radius: 12px; padding: 16px; background-image: linear-gradient(#e8e8e8 1px, transparent 1px), linear-gradient(90deg, #e8e8e8 1px, transparent 1px); background-size: 24px 24px; }
+.mode-toggle { display: flex; gap: 0; margin-bottom: 16px; }
+.mode-btn { flex: 1; padding: 10px; text-align: center; border: 2px solid #333; font-size: 0.85rem; cursor: pointer; }
+.mode-btn:first-child { border-radius: 8px 0 0 8px; }
+.mode-btn:last-child { border-radius: 0 8px 8px 0; border-left: none; }
+.mode-btn.active { background: #333; color: #fff; }
+.form-group { margin-bottom: 14px; }
+.form-label { font-size: 0.75rem; color: #555; margin-bottom: 4px; display: block; }
+.form-input { width: 100%; padding: 10px 12px; border: 2px solid #444; border-radius: 6px; font-family: inherit; font-size: 0.9rem; background: #fffef8; }
+.form-select { width: 100%; padding: 10px 12px; border: 2px solid #444; border-radius: 6px; font-family: inherit; font-size: 0.9rem; background: #fffef8; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' fill='none' stroke='%23333' stroke-width='2'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; }
+.lot-info { background: #f0f8ff; border: 1.5px dashed #0984e3; border-radius: 6px; padding: 8px 12px; margin-top: 6px; font-size: 0.75rem; }
+.lot-badge { display: inline-block; padding: 2px 6px; border-radius: 3px; font-size: 0.6rem; margin-right: 6px; }
+.lot-ok { background: #d4edda; color: #155724; }
+.lot-warn { background: #fff3cd; color: #856404; }
+.uom-row { display: flex; gap: 8px; align-items: center; }
+.uom-row .form-input { flex: 1; }
+.uom-select { width: 80px; padding: 10px 8px; border: 2px solid #444; border-radius: 6px; font-family: inherit; font-size: 0.85rem; background: #fffef8; }
+.multi-ao-grid { border: 2px solid #444; border-radius: 8px; overflow: hidden; }
+.multi-ao-header { display: grid; grid-template-columns: 1fr 100px; background: #333; color: #fff; padding: 8px 12px; font-size: 0.75rem; }
+.multi-ao-row { display: grid; grid-template-columns: 1fr 100px; padding: 8px 12px; border-bottom: 1px solid #eee; align-items: center; font-size: 0.85rem; }
+.multi-ao-row input { width: 80px; padding: 6px 8px; border: 1.5px solid #444; border-radius: 4px; font-family: inherit; text-align: right; }
+.btn-primary { width: 100%; padding: 14px; background: #333; color: #fff; border: none; border-radius: 8px; font-family: inherit; font-size: 1rem; cursor: pointer; margin-top: 16px; }
+.btn-primary:active { background: #555; }
+.sticky-note { padding: 8px 12px; font-size: 0.75rem; border-radius: 2px; box-shadow: 2px 2px 4px rgba(0,0,0,0.1); margin-top: 12px; }
+.sticky-yellow { background: #fff3a0; transform: rotate(-1deg); }
+.stock-summary { display: flex; justify-content: space-between; background: #f8f9fa; border: 1.5px solid #ddd; border-radius: 6px; padding: 8px 12px; margin-bottom: 12px; font-size: 0.8rem; }
+.section-divider { border: none; border-top: 2px dashed #ccc; margin: 20px 0; }
+</style>
+</head>
+<body>
+<div class="page-header">
+  <h1>Xuất Kho cho Ao</h1><span class="version-tag">WIREFRAME v0.1</span>
+  <p class="subtitle">Form mobile-first — chọn vật tư → chọn ao → confirm</p>
+  <p class="dateline">Mobile 375px · /farm/issue · 2026-05-05</p>
+</div>
+
+<div class="tab-strip">
+  <span class="tab">DASHBOARD</span>
+  <span class="tab active">XUẤT KHO</span>
+  <span class="tab">SAN TÔM</span>
+  <span class="tab">MUA HÀNG</span>
+</div>
+
+<div class="sketch-canvas">
+  <div class="mode-toggle" data-od-id="mode-toggle">
+    <div class="mode-btn active">Mode 1: Xuất cho 1 ao</div>
+    <div class="mode-btn">Mode 2: Chia nhiều ao</div>
+  </div>
+
+  <!-- MODE 1: Single pond -->
+  <div data-od-id="mode1-form">
+    <div class="form-group">
+      <label class="form-label">Chọn ao *</label>
+      <select class="form-select">
+        <option>Ao 2 — Phase 2 (145K con, ngày 30)</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Vật tư *</label>
+      <select class="form-select">
+        <option>Thức ăn Grobest #2 (FEED)</option>
+      </select>
+    </div>
+
+    <div class="stock-summary">
+      <span>Tồn kho tạm: <b>18.5 KG</b></span>
+      <span>Kho chính: <b>3 BAO (75 KG)</b></span>
+    </div>
+
+    <div class="lot-info" data-od-id="lot-fefo">
+      <b>FEFO Auto-pick:</b><br>
+      <span class="lot-badge lot-ok">Lô #L001</span> HSD: 15/06 · Tồn: 18.5 KG ← <i>xuất từ đây</i><br>
+      <span class="lot-badge lot-warn">Lô #L002</span> HSD: 20/07 · Tồn: 25 KG
+    </div>
+
+    <div class="form-group" style="margin-top:14px">
+      <label class="form-label">Số lượng xuất *</label>
+      <div class="uom-row">
+        <input class="form-input" type="number" placeholder="8" value="8">
+        <select class="uom-select">
+          <option>KG</option>
+          <option>BAO</option>
+        </select>
+      </div>
+      <div style="font-size:0.7rem;color:#666;margin-top:4px">= 8 KG × 14,000đ/KG = <b>112,000đ</b> CP</div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Ghi chú</label>
+      <input class="form-input" placeholder="VD: cho ăn sáng">
+    </div>
+
+    <button class="btn-primary">✓ Xác nhận xuất kho</button>
+  </div>
+
+  <hr class="section-divider">
+
+  <!-- MODE 2: Multi-pond -->
+  <div data-od-id="mode2-form">
+    <p style="font-size:0.8rem;font-style:italic;margin-bottom:12px;color:#555">Mode 2: Chọn 1 vật tư → chia cho nhiều ao</p>
+
+    <div class="form-group">
+      <label class="form-label">Vật tư *</label>
+      <select class="form-select">
+        <option>Khoáng tạt AquaMin (MINERAL)</option>
+      </select>
+    </div>
+
+    <div class="stock-summary">
+      <span>Tồn kho tạm: <b>2.5 LÍT</b></span>
+      <span>Đơn vị: 1 CHAI = 500 ML</span>
+    </div>
+
+    <div class="multi-ao-grid" data-od-id="multi-ao-table">
+      <div class="multi-ao-header">
+        <span>Ao</span>
+        <span>Số lượng (ML)</span>
+      </div>
+      <div class="multi-ao-row">
+        <span>Ao 1 (380K con)</span>
+        <input type="number" value="200">
+      </div>
+      <div class="multi-ao-row">
+        <span>Ao 2 (145K con)</span>
+        <input type="number" value="150">
+      </div>
+      <div class="multi-ao-row">
+        <span>Ao 3 (120K con)</span>
+        <input type="number" value="150">
+      </div>
+      <div class="multi-ao-row">
+        <span>Ao 4 (95K con)</span>
+        <input type="number" value="100">
+      </div>
+      <div class="multi-ao-row" style="background:#f8f9fa;font-weight:bold">
+        <span>Tổng</span>
+        <span style="padding-right:12px;text-align:right">600 ML</span>
+      </div>
+    </div>
+
+    <div style="font-size:0.7rem;color:#666;margin-top:8px">
+      Tổng CP: 600 ML × 120đ/ML = <b>72,000đ</b> (chia theo tỷ lệ)
+    </div>
+
+    <button class="btn-primary">✓ Xác nhận xuất cho 4 ao</button>
+  </div>
+
+  <div class="sticky-note sticky-yellow" data-od-id="sticky-note">
+    UX Notes:<br>
+    • Large touch targets (48px min)<br>
+    • Swipe left = xóa dòng ao<br>
+    • Auto-suggest lot FEFO<br>
+    • Offline queue nếu mất mạng
+  </div>
+</div>
+
+<!-- Bottom Nav -->
+<div style="position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:2px solid #333;display:flex;justify-content:space-around;padding:8px 0;font-size:0.65rem;text-align:center">
+  <div>📊<br>Dashboard</div>
+  <div style="font-weight:bold;color:#e17055">📦<br>Xuất kho</div>
+  <div>🔀<br>San tôm</div>
+  <div>🏪<br>Kho</div>
+  <div>☰<br>Menu</div>
+</div>
+<div style="height:60px"></div>
+</body>
+</html>

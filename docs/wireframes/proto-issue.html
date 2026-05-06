@@ -1,0 +1,583 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Xuất Kho — VietERP Farm</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f0f2f5;
+  --surface: #ffffff;
+  --fg: #1a1a2e;
+  --muted: #6b7280;
+  --border: #e5e7eb;
+  --accent: #e94560;
+  --success: #16a085;
+  --warning: #f39c12;
+  --danger: #e74c3c;
+  --info: #3498db;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --radius: 8px;
+  --radius-sm: 4px;
+  --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 6px rgba(0,0,0,0.07), 0 2px 4px rgba(0,0,0,0.04);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font-body); background: var(--bg); color: var(--fg); font-size: 14px; line-height: 1.5; min-height: 100vh; padding-bottom: 72px; }
+
+.app-header {
+  background: var(--fg);
+  color: #fff;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+.app-header .back { cursor: pointer; padding: 4px; }
+.app-header .title { font-weight: 600; font-size: 16px; }
+
+.main { padding: 16px; max-width: 560px; margin: 0 auto; }
+
+/* ─── Mode Toggle ─── */
+.mode-toggle {
+  display: flex;
+  background: var(--surface);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  margin-bottom: 16px;
+}
+.mode-btn {
+  flex: 1;
+  padding: 12px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 500;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: var(--muted);
+  transition: all 0.2s;
+  min-height: 44px;
+}
+.mode-btn.active {
+  background: var(--accent);
+  color: #fff;
+  font-weight: 600;
+}
+.mode-btn:not(.active):hover { background: rgba(0,0,0,0.04); }
+
+/* ─── Form ─── */
+.form-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 16px;
+  margin-bottom: 12px;
+}
+.field { margin-bottom: 16px; }
+.field-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+.field-label .req { color: var(--accent); }
+.field-input, .field-select {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 14px;
+  background: var(--surface);
+  color: var(--fg);
+  min-height: 44px;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.field-input:focus, .field-select:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(233,69,96,0.1);
+}
+.field-input.error { border-color: var(--danger); }
+.field-error { color: var(--danger); font-size: 12px; margin-top: 4px; display: none; }
+
+/* ─── Stock Summary ─── */
+.stock-summary {
+  display: flex;
+  justify-content: space-between;
+  background: #f8fafc;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 10px 14px;
+  font-size: 13px;
+  margin-bottom: 16px;
+}
+.stock-summary strong { font-family: var(--font-mono); }
+
+/* ─── FEFO Lot Display ─── */
+.fefo-box {
+  border: 1px dashed var(--info);
+  background: #f0f9ff;
+  border-radius: 6px;
+  padding: 12px;
+  margin-bottom: 16px;
+}
+.fefo-title { font-size: 12px; font-weight: 600; color: var(--info); margin-bottom: 8px; }
+.lot-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+  font-size: 13px;
+}
+.lot-badge {
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  font-size: 11px;
+  font-weight: 600;
+  font-family: var(--font-mono);
+}
+.lot-ok { background: #d1fae5; color: #065f46; }
+.lot-warn { background: #fef3c7; color: #92400e; }
+.lot-pick { color: var(--info); font-style: italic; font-size: 12px; margin-left: auto; }
+
+/* ─── UoM Row ─── */
+.uom-row { display: flex; gap: 8px; align-items: stretch; }
+.uom-row .field-input { flex: 1; }
+.uom-toggle {
+  display: flex;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.uom-btn {
+  padding: 8px 14px;
+  border: none;
+  background: none;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: var(--font-mono);
+  cursor: pointer;
+  color: var(--muted);
+  min-width: 48px;
+  min-height: 44px;
+  transition: all 0.15s;
+}
+.uom-btn.active { background: var(--fg); color: #fff; }
+.uom-btn:not(.active):hover { background: rgba(0,0,0,0.04); }
+
+/* ─── Cost Preview ─── */
+.cost-preview {
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-radius: 6px;
+  padding: 12px;
+  margin-bottom: 16px;
+  font-size: 13px;
+  font-family: var(--font-mono);
+}
+.cost-line { display: flex; justify-content: space-between; padding: 3px 0; }
+.cost-total { border-top: 2px solid var(--fg); margin-top: 6px; padding-top: 6px; font-weight: 700; }
+
+/* ─── Multi-Ao Grid ─── */
+.multi-ao-table {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+.multi-ao-header {
+  display: grid;
+  grid-template-columns: 1fr 100px 80px;
+  background: var(--fg);
+  color: #fff;
+  padding: 10px 14px;
+  font-size: 12px;
+  font-weight: 500;
+}
+.multi-ao-row {
+  display: grid;
+  grid-template-columns: 1fr 100px 80px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  align-items: center;
+  font-size: 13px;
+}
+.multi-ao-row:last-child { border-bottom: none; }
+.multi-ao-row.total { background: #f8fafc; font-weight: 600; }
+.multi-ao-row input {
+  width: 80px;
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  text-align: right;
+  min-height: 36px;
+}
+.multi-ao-row input:focus { outline: none; border-color: var(--accent); }
+.multi-ao-cost { font-family: var(--font-mono); font-size: 12px; color: var(--muted); text-align: right; }
+
+/* ─── Buttons ─── */
+.btn-confirm {
+  width: 100%;
+  padding: 14px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius);
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  min-height: 48px;
+  transition: background 0.15s, transform 0.05s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.btn-confirm:hover { background: #d63d56; }
+.btn-confirm:active { transform: translateY(1px); }
+.btn-confirm:disabled { background: var(--border); color: var(--muted); cursor: not-allowed; }
+
+/* ─── Bottom Nav ─── */
+.bottom-nav {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: space-around;
+  padding: 6px 0 max(6px, env(safe-area-inset-bottom));
+  z-index: 50;
+  box-shadow: 0 -2px 8px rgba(0,0,0,0.06);
+}
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  font-size: 10px;
+  color: var(--muted);
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  min-width: 56px;
+  transition: color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.nav-item.active { color: var(--accent); font-weight: 600; }
+.nav-icon { font-size: 20px; }
+
+/* ─── Sections ─── */
+.mode-section { display: none; }
+.mode-section.active { display: block; }
+
+/* ─── Toast ─── */
+.toast {
+  position: fixed;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background: var(--fg);
+  color: #fff;
+  padding: 12px 20px;
+  border-radius: var(--radius);
+  font-size: 14px;
+  font-weight: 500;
+  z-index: 100;
+  opacity: 0;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  box-shadow: var(--shadow-md);
+}
+.toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+</style>
+</head>
+<body>
+
+<header class="app-header" data-od-id="app-header">
+  <div class="back" onclick="location.href='proto-dashboard.html'">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+  </div>
+  <span class="title">Xuất Kho cho Ao</span>
+</header>
+
+<main class="main">
+
+  <!-- Mode Toggle -->
+  <div class="mode-toggle" data-od-id="mode-toggle">
+    <button class="mode-btn active" onclick="switchMode('single')">Xuất cho 1 ao</button>
+    <button class="mode-btn" onclick="switchMode('multi')">Chia nhiều ao</button>
+  </div>
+
+  <!-- MODE 1: Single Pond -->
+  <div id="mode-single" class="mode-section active" data-od-id="mode-single">
+    <div class="form-card">
+      <div class="field">
+        <label class="field-label">Chọn ao <span class="req">*</span></label>
+        <select class="field-select" id="pondSelect" onchange="updateStock()">
+          <option value="">— Chọn ao —</option>
+          <option value="ao2" selected>Ao 2 — Phase 2 (145K con, ngày 30)</option>
+          <option value="ao3">Ao 3 — Phase 2 (120K con, ngày 30)</option>
+          <option value="ao4">Ao 4 — Phase 2 (95K con, ngày 28)</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label class="field-label">Vật tư <span class="req">*</span></label>
+        <select class="field-select" id="productSelect" onchange="updateStock()">
+          <option value="">— Chọn vật tư —</option>
+          <option value="feed" selected>Thức ăn Grobest #2 (FEED)</option>
+          <option value="mineral">Khoáng tạt AquaMin (MINERAL)</option>
+          <option value="probiotic">Vi sinh ProBio (PROBIOTIC)</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="stock-summary" id="stockSummary">
+      <span>Kho tạm: <strong>18.5 KG</strong></span>
+      <span>Kho chính: <strong>3 BAO (75 KG)</strong></span>
+    </div>
+
+    <div class="fefo-box" id="fefoBox" data-od-id="fefo-display">
+      <div class="fefo-title">FEFO Auto-pick</div>
+      <div class="lot-row">
+        <span class="lot-badge lot-ok">Lô #L001</span>
+        <span>HSD: 15/06 · Tồn: 18.5 KG</span>
+        <span class="lot-pick">← xuất từ đây</span>
+      </div>
+      <div class="lot-row">
+        <span class="lot-badge lot-warn">Lô #L002</span>
+        <span>HSD: 20/07 · Tồn: 25 KG</span>
+      </div>
+    </div>
+
+    <div class="form-card">
+      <div class="field">
+        <label class="field-label">Số lượng xuất <span class="req">*</span></label>
+        <div class="uom-row">
+          <input type="number" class="field-input" id="qtyInput" value="8" min="0.1" step="0.1" oninput="updateSingleCost()">
+          <div class="uom-toggle">
+            <button class="uom-btn active" onclick="switchUom(this,'KG')">KG</button>
+            <button class="uom-btn" onclick="switchUom(this,'BAO')">BAO</button>
+          </div>
+        </div>
+        <div class="field-error" id="qtyError">Số lượng vượt tồn kho (18.5 KG)</div>
+      </div>
+
+      <div class="field">
+        <label class="field-label">Ghi chú</label>
+        <input type="text" class="field-input" placeholder="VD: cho ăn sáng">
+      </div>
+    </div>
+
+    <div class="cost-preview" id="singleCostPreview" data-od-id="cost-preview">
+      <div class="cost-line">
+        <span>Đơn giá:</span>
+        <span>14,000đ/KG</span>
+      </div>
+      <div class="cost-line cost-total">
+        <span>Tổng CP:</span>
+        <span id="singleTotalCost">112,000đ</span>
+      </div>
+    </div>
+
+    <button class="btn-confirm" onclick="confirmSingle()" id="btnSingle">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+      Xác nhận xuất kho
+    </button>
+  </div>
+
+  <!-- MODE 2: Multi Pond -->
+  <div id="mode-multi" class="mode-section" data-od-id="mode-multi">
+    <div class="form-card">
+      <div class="field">
+        <label class="field-label">Vật tư <span class="req">*</span></label>
+        <select class="field-select" id="multiProductSelect">
+          <option value="mineral" selected>Khoáng tạt AquaMin (MINERAL)</option>
+          <option value="feed">Thức ăn Grobest #2 (FEED)</option>
+          <option value="probiotic">Vi sinh ProBio (PROBIOTIC)</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="stock-summary">
+      <span>Kho tạm: <strong>2.5 LÍT</strong></span>
+      <span>Đơn vị: <strong>1 CHAI = 500 ML</strong></span>
+    </div>
+
+    <div class="multi-ao-table" data-od-id="multi-ao-table">
+      <div class="multi-ao-header">
+        <span>Ao</span>
+        <span style="text-align:right">ML</span>
+        <span style="text-align:right">CP</span>
+      </div>
+      <div class="multi-ao-row">
+        <span>Ao 1 (380K con)</span>
+        <input type="number" value="200" oninput="updateMultiTotal()">
+        <span class="multi-ao-cost" id="cost-ao1">24,000đ</span>
+      </div>
+      <div class="multi-ao-row">
+        <span>Ao 2 (145K con)</span>
+        <input type="number" value="150" oninput="updateMultiTotal()">
+        <span class="multi-ao-cost" id="cost-ao2">18,000đ</span>
+      </div>
+      <div class="multi-ao-row">
+        <span>Ao 3 (120K con)</span>
+        <input type="number" value="150" oninput="updateMultiTotal()">
+        <span class="multi-ao-cost" id="cost-ao3">18,000đ</span>
+      </div>
+      <div class="multi-ao-row">
+        <span>Ao 4 (95K con)</span>
+        <input type="number" value="100" oninput="updateMultiTotal()">
+        <span class="multi-ao-cost" id="cost-ao4">12,000đ</span>
+      </div>
+      <div class="multi-ao-row total">
+        <span>Tổng</span>
+        <span style="text-align:right;font-family:var(--font-mono)" id="multiTotalQty">600 ML</span>
+        <span class="multi-ao-cost" style="font-weight:600;color:var(--fg)" id="multiTotalCost">72,000đ</span>
+      </div>
+    </div>
+
+    <div class="cost-preview">
+      <div class="cost-line">
+        <span>Đơn giá:</span>
+        <span>120đ/ML</span>
+      </div>
+      <div class="cost-line">
+        <span>Tổng xuất:</span>
+        <span id="multiQtyPreview">600 ML</span>
+      </div>
+      <div class="cost-line">
+        <span>Tồn sau xuất:</span>
+        <span id="multiRemain">1,900 ML</span>
+      </div>
+      <div class="cost-line cost-total">
+        <span>Tổng CP:</span>
+        <span id="multiCostPreview">72,000đ</span>
+      </div>
+    </div>
+
+    <button class="btn-confirm" onclick="confirmMulti()" id="btnMulti">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+      Xác nhận xuất cho 4 ao
+    </button>
+  </div>
+
+</main>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- Bottom Nav -->
+<nav class="bottom-nav" data-od-id="bottom-nav">
+  <div class="nav-item" onclick="location.href='proto-dashboard.html'">
+    <span class="nav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg></span>
+    <span>Dashboard</span>
+  </div>
+  <div class="nav-item active">
+    <span class="nav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg></span>
+    <span>Xuất kho</span>
+  </div>
+  <div class="nav-item">
+    <span class="nav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/></svg></span>
+    <span>San tôm</span>
+  </div>
+  <div class="nav-item">
+    <span class="nav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="5" rx="1"/><path d="M6 12v5M18 12v5M4 22h16"/></svg></span>
+    <span>Kho</span>
+  </div>
+  <div class="nav-item">
+    <span class="nav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg></span>
+    <span>Menu</span>
+  </div>
+</nav>
+
+<script>
+const UNIT_PRICE_KG = 14000;
+const UNIT_PRICE_BAO = 350000;
+const STOCK_KG = 18.5;
+const STOCK_ML = 2500;
+const PRICE_ML = 120;
+
+function switchMode(mode) {
+  document.querySelectorAll('.mode-btn').forEach((b, i) => {
+    b.classList.toggle('active', (mode === 'single' && i === 0) || (mode === 'multi' && i === 1));
+  });
+  document.getElementById('mode-single').classList.toggle('active', mode === 'single');
+  document.getElementById('mode-multi').classList.toggle('active', mode === 'multi');
+}
+
+function switchUom(el, unit) {
+  el.parentElement.querySelectorAll('.uom-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  updateSingleCost();
+}
+
+function updateStock() {}
+
+function updateSingleCost() {
+  const qty = parseFloat(document.getElementById('qtyInput').value) || 0;
+  const activeUom = document.querySelector('.uom-btn.active').textContent;
+  const price = activeUom === 'KG' ? UNIT_PRICE_KG : UNIT_PRICE_BAO;
+  const total = qty * price;
+  document.getElementById('singleTotalCost').textContent = total.toLocaleString('vi-VN') + 'đ';
+
+  const maxStock = activeUom === 'KG' ? STOCK_KG : STOCK_KG / 25;
+  const errEl = document.getElementById('qtyError');
+  const inputEl = document.getElementById('qtyInput');
+  if (qty > maxStock) {
+    errEl.style.display = 'block';
+    errEl.textContent = `Số lượng vượt tồn kho (${maxStock} ${activeUom})`;
+    inputEl.classList.add('error');
+  } else {
+    errEl.style.display = 'none';
+    inputEl.classList.remove('error');
+  }
+}
+
+function updateMultiTotal() {
+  const inputs = document.querySelectorAll('#mode-multi .multi-ao-row:not(.total) input');
+  let total = 0;
+  inputs.forEach((inp, i) => {
+    const val = parseFloat(inp.value) || 0;
+    total += val;
+    const cost = val * PRICE_ML;
+    document.getElementById(`cost-ao${i+1}`).textContent = cost.toLocaleString('vi-VN') + 'đ';
+  });
+  document.getElementById('multiTotalQty').textContent = total + ' ML';
+  const totalCost = total * PRICE_ML;
+  document.getElementById('multiTotalCost').textContent = totalCost.toLocaleString('vi-VN') + 'đ';
+  document.getElementById('multiQtyPreview').textContent = total + ' ML';
+  document.getElementById('multiRemain').textContent = (STOCK_ML - total).toLocaleString('vi-VN') + ' ML';
+  document.getElementById('multiCostPreview').textContent = totalCost.toLocaleString('vi-VN') + 'đ';
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+function confirmSingle() {
+  const qty = parseFloat(document.getElementById('qtyInput').value) || 0;
+  if (qty <= 0) return;
+  showToast('Đã xuất kho thành công!');
+}
+
+function confirmMulti() {
+  showToast('Đã xuất kho cho 4 ao thành công!');
+}
+</script>
+</body>
+</html>

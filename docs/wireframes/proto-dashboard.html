@@ -1,0 +1,513 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Farm Dashboard — VietERP</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f0f2f5;
+  --surface: #ffffff;
+  --fg: #1a1a2e;
+  --muted: #6b7280;
+  --border: #e5e7eb;
+  --accent: #e94560;
+  --success: #16a085;
+  --warning: #f39c12;
+  --danger: #e74c3c;
+  --info: #3498db;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --radius: 8px;
+  --radius-sm: 4px;
+  --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 6px rgba(0,0,0,0.07), 0 2px 4px rgba(0,0,0,0.04);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font-body); background: var(--bg); color: var(--fg); font-size: 14px; line-height: 1.5; min-height: 100vh; padding-bottom: 72px; }
+
+/* ─── App Shell ─── */
+.app-header {
+  background: var(--fg);
+  color: #fff;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+.app-header .brand { font-weight: 700; font-size: 16px; letter-spacing: -0.01em; }
+.app-header .crop-badge {
+  background: rgba(255,255,255,0.15);
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-family: var(--font-mono);
+}
+.app-header .avatar {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: var(--accent);
+  display: grid;
+  place-items: center;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.main { padding: 16px; max-width: 960px; margin: 0 auto; }
+
+/* ─── KPI Cards ─── */
+.kpi-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px; }
+@media (min-width: 640px) { .kpi-grid { grid-template-columns: repeat(4, 1fr); } }
+.kpi-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 16px;
+  box-shadow: var(--shadow);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  cursor: pointer;
+}
+.kpi-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.kpi-label { font-size: 12px; color: var(--muted); margin-bottom: 6px; font-weight: 500; }
+.kpi-value { font-family: var(--font-mono); font-size: 24px; font-weight: 700; letter-spacing: -0.02em; }
+.kpi-sub { font-size: 11px; margin-top: 4px; font-family: var(--font-mono); }
+.kpi-sub.up { color: var(--danger); }
+.kpi-sub.good { color: var(--success); }
+.kpi-sub.warn { color: var(--warning); }
+
+/* ─── Section Card ─── */
+.section-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  margin-bottom: 16px;
+  overflow: hidden;
+}
+.section-header {
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border);
+}
+.section-title { font-size: 14px; font-weight: 600; }
+.section-body { padding: 16px; }
+
+/* ─── Chart: Stacked Bar ─── */
+.chart-container { position: relative; }
+.bar-chart { display: flex; align-items: flex-end; gap: 16px; height: 180px; padding: 0 8px; }
+@media (min-width: 640px) { .bar-chart { height: 220px; gap: 24px; } }
+.bar-group { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; height: 100%; justify-content: flex-end; }
+.bar-stack { width: 100%; max-width: 56px; display: flex; flex-direction: column-reverse; border-radius: 4px 4px 0 0; overflow: hidden; cursor: pointer; transition: opacity 0.15s; }
+.bar-stack:hover { opacity: 0.85; }
+.bar-seg { transition: height 0.5s ease; }
+.bar-seg.feed { background: var(--accent); }
+.bar-seg.medicine { background: var(--info); }
+.bar-seg.mineral { background: var(--success); }
+.bar-seg.probiotic { background: #8b5cf6; }
+.bar-label { font-size: 12px; color: var(--muted); font-weight: 500; }
+.bar-total { font-family: var(--font-mono); font-size: 11px; color: var(--muted); }
+.chart-legend { display: flex; gap: 16px; flex-wrap: wrap; padding: 12px 0 0; }
+.legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); }
+.legend-dot { width: 10px; height: 10px; border-radius: 2px; }
+
+/* ─── Chart: Growth Curve ─── */
+.growth-chart svg { width: 100%; height: auto; }
+.growth-line { fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+.growth-dot { transition: r 0.15s; cursor: pointer; }
+.growth-dot:hover { r: 6; }
+
+/* ─── Pond Grid ─── */
+.pond-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+@media (min-width: 640px) { .pond-grid { grid-template-columns: repeat(4, 1fr); } }
+.pond-card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px;
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.pond-card:hover { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+.pond-name { font-weight: 600; font-size: 14px; margin-bottom: 8px; }
+.pond-stat { display: flex; justify-content: space-between; font-size: 12px; padding: 2px 0; }
+.pond-stat .label { color: var(--muted); }
+.fcr-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+}
+.fcr-good { background: #d1fae5; color: #065f46; }
+.fcr-warn { background: #fef3c7; color: #92400e; }
+.fcr-bad { background: #fee2e2; color: #991b1b; }
+
+/* ─── Alerts ─── */
+.alert-list { display: flex; flex-direction: column; gap: 8px; }
+.alert-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.1s;
+}
+.alert-item:hover { filter: brightness(0.97); }
+.alert-item.danger { background: #fee2e2; }
+.alert-item.warning { background: #fef3c7; }
+.alert-item.info { background: #d1fae5; }
+.alert-badge {
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-family: var(--font-mono);
+  white-space: nowrap;
+  color: #fff;
+}
+.alert-badge.danger { background: var(--danger); }
+.alert-badge.warning { background: var(--warning); }
+.alert-badge.info { background: var(--success); }
+
+/* ─── Bottom Nav ─── */
+.bottom-nav {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: space-around;
+  padding: 6px 0 max(6px, env(safe-area-inset-bottom));
+  z-index: 50;
+  box-shadow: 0 -2px 8px rgba(0,0,0,0.06);
+}
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  font-size: 10px;
+  color: var(--muted);
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  min-width: 56px;
+  transition: color 0.15s, background 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.nav-item:hover { background: rgba(0,0,0,0.04); }
+.nav-item.active { color: var(--accent); font-weight: 600; }
+.nav-icon { font-size: 20px; }
+
+/* ─── Tooltips ─── */
+.tooltip {
+  position: absolute;
+  background: var(--fg);
+  color: #fff;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-family: var(--font-mono);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s;
+  white-space: nowrap;
+  z-index: 100;
+}
+
+/* ─── Tabs ─── */
+.tab-row { display: flex; gap: 0; }
+.tab-btn {
+  padding: 8px 14px;
+  font-size: 12px;
+  font-weight: 500;
+  border: none;
+  background: none;
+  color: var(--muted);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: color 0.15s, border-color 0.15s;
+}
+.tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+.tab-btn:hover { color: var(--fg); }
+</style>
+</head>
+<body>
+
+<header class="app-header" data-od-id="app-header">
+  <div style="display:flex;align-items:center;gap:12px">
+    <span class="brand">VietERP Farm</span>
+    <span class="crop-badge">VU-2026-01</span>
+  </div>
+  <div style="display:flex;align-items:center;gap:12px">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/></svg>
+    <div class="avatar">TP</div>
+  </div>
+</header>
+
+<main class="main">
+
+  <!-- KPI Cards -->
+  <section data-od-id="kpi-cards">
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-label">Tổng CP vụ</div>
+        <div class="kpi-value" style="color:var(--accent)">285tr</div>
+        <div class="kpi-sub up">+12% vs vụ trước</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">FCR trung bình</div>
+        <div class="kpi-value" style="color:var(--success)">1.42</div>
+        <div class="kpi-sub good"><span class="fcr-badge fcr-good">Tốt</span></div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Tỷ lệ sống TB</div>
+        <div class="kpi-value">78%</div>
+        <div class="kpi-sub" style="color:var(--muted)">400K / 510K con</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Công nợ NCC</div>
+        <div class="kpi-value" style="color:var(--warning)">45tr</div>
+        <div class="kpi-sub warn">3 NCC · 2 quá hạn</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CP Stacked Bar Chart -->
+  <section class="section-card" data-od-id="cp-chart">
+    <div class="section-header">
+      <span class="section-title">Chi phí phân loại theo ao</span>
+      <div class="tab-row">
+        <button class="tab-btn active" onclick="switchChartTab(this,'week')">Tuần</button>
+        <button class="tab-btn" onclick="switchChartTab(this,'month')">Tháng</button>
+        <button class="tab-btn" onclick="switchChartTab(this,'crop')">Cả vụ</button>
+      </div>
+    </div>
+    <div class="section-body">
+      <div class="chart-container">
+        <div class="bar-chart" id="barChart">
+          <div class="bar-group">
+            <div class="bar-total">93tr</div>
+            <div class="bar-stack" style="height:82%" onclick="showBarDetail(this)" data-pond="Ao 1" data-feed="65" data-med="14" data-min="8" data-pro="6">
+              <div class="bar-seg feed" style="height:70%"></div>
+              <div class="bar-seg medicine" style="height:15%"></div>
+              <div class="bar-seg mineral" style="height:9%"></div>
+              <div class="bar-seg probiotic" style="height:6%"></div>
+            </div>
+            <span class="bar-label">Ao 1</span>
+          </div>
+          <div class="bar-group">
+            <div class="bar-total">72tr</div>
+            <div class="bar-stack" style="height:64%" onclick="showBarDetail(this)" data-pond="Ao 2" data-feed="40" data-med="14" data-min="10" data-pro="8">
+              <div class="bar-seg feed" style="height:55%"></div>
+              <div class="bar-seg medicine" style="height:20%"></div>
+              <div class="bar-seg mineral" style="height:14%"></div>
+              <div class="bar-seg probiotic" style="height:11%"></div>
+            </div>
+            <span class="bar-label">Ao 2</span>
+          </div>
+          <div class="bar-group">
+            <div class="bar-total">68tr</div>
+            <div class="bar-stack" style="height:60%" onclick="showBarDetail(this)" data-pond="Ao 3" data-feed="41" data-med="12" data-min="8" data-pro="7">
+              <div class="bar-seg feed" style="height:60%"></div>
+              <div class="bar-seg medicine" style="height:18%"></div>
+              <div class="bar-seg mineral" style="height:12%"></div>
+              <div class="bar-seg probiotic" style="height:10%"></div>
+            </div>
+            <span class="bar-label">Ao 3</span>
+          </div>
+          <div class="bar-group">
+            <div class="bar-total">52tr</div>
+            <div class="bar-stack" style="height:46%" onclick="showBarDetail(this)" data-pond="Ao 4" data-feed="23" data-med="10" data-min="7" data-pro="12">
+              <div class="bar-seg feed" style="height:45%"></div>
+              <div class="bar-seg medicine" style="height:19%"></div>
+              <div class="bar-seg mineral" style="height:13%"></div>
+              <div class="bar-seg probiotic" style="height:23%"></div>
+            </div>
+            <span class="bar-label">Ao 4</span>
+          </div>
+        </div>
+        <div class="chart-legend">
+          <span class="legend-item"><span class="legend-dot" style="background:var(--accent)"></span> Thức ăn</span>
+          <span class="legend-item"><span class="legend-dot" style="background:var(--info)"></span> Thuốc</span>
+          <span class="legend-item"><span class="legend-dot" style="background:var(--success)"></span> Khoáng</span>
+          <span class="legend-item"><span class="legend-dot" style="background:#8b5cf6"></span> Vi sinh</span>
+        </div>
+      </div>
+      <div id="barDetail" style="display:none;margin-top:12px;padding:12px;background:var(--bg);border-radius:var(--radius);font-size:13px;font-family:var(--font-mono)"></div>
+    </div>
+  </section>
+
+  <!-- Growth Curve -->
+  <section class="section-card" data-od-id="growth-chart">
+    <div class="section-header">
+      <span class="section-title">Growth Curve (gram/con)</span>
+      <span style="font-size:12px;color:var(--muted)">Cập nhật: 05/05</span>
+    </div>
+    <div class="section-body">
+      <svg viewBox="0 0 400 180" style="width:100%;height:auto">
+        <!-- Grid -->
+        <line x1="40" y1="10" x2="40" y2="150" stroke="var(--border)" stroke-width="1"/>
+        <line x1="40" y1="150" x2="390" y2="150" stroke="var(--border)" stroke-width="1"/>
+        <line x1="40" y1="115" x2="390" y2="115" stroke="var(--border)" stroke-width="0.5" stroke-dasharray="4"/>
+        <line x1="40" y1="80" x2="390" y2="80" stroke="var(--border)" stroke-width="0.5" stroke-dasharray="4"/>
+        <line x1="40" y1="45" x2="390" y2="45" stroke="var(--border)" stroke-width="0.5" stroke-dasharray="4"/>
+        <!-- Y labels -->
+        <text x="36" y="153" text-anchor="end" fill="var(--muted)" font-size="10" font-family="var(--font-mono)">0g</text>
+        <text x="36" y="118" text-anchor="end" fill="var(--muted)" font-size="10" font-family="var(--font-mono)">10g</text>
+        <text x="36" y="83" text-anchor="end" fill="var(--muted)" font-size="10" font-family="var(--font-mono)">20g</text>
+        <text x="36" y="48" text-anchor="end" fill="var(--muted)" font-size="10" font-family="var(--font-mono)">30g</text>
+        <!-- X labels -->
+        <text x="70" y="166" text-anchor="middle" fill="var(--muted)" font-size="10" font-family="var(--font-mono)">T1</text>
+        <text x="140" y="166" text-anchor="middle" fill="var(--muted)" font-size="10" font-family="var(--font-mono)">T2</text>
+        <text x="210" y="166" text-anchor="middle" fill="var(--muted)" font-size="10" font-family="var(--font-mono)">T3</text>
+        <text x="280" y="166" text-anchor="middle" fill="var(--muted)" font-size="10" font-family="var(--font-mono)">T4</text>
+        <text x="350" y="166" text-anchor="middle" fill="var(--muted)" font-size="10" font-family="var(--font-mono)">T5</text>
+        <!-- Ao 1 line (red) -->
+        <polyline points="70,143 140,129 210,108 280,73 350,38" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="70" cy="143" r="4" fill="var(--accent)" class="growth-dot"/>
+        <circle cx="140" cy="129" r="4" fill="var(--accent)" class="growth-dot"/>
+        <circle cx="210" cy="108" r="4" fill="var(--accent)" class="growth-dot"/>
+        <circle cx="280" cy="73" r="4" fill="var(--accent)" class="growth-dot"/>
+        <circle cx="350" cy="38" r="4" fill="var(--accent)" class="growth-dot"/>
+        <!-- Ao 2 line (blue) -->
+        <polyline points="70,145 140,136 210,120 280,94 350,66" fill="none" stroke="var(--info)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="70" cy="145" r="4" fill="var(--info)" class="growth-dot"/>
+        <circle cx="140" cy="136" r="4" fill="var(--info)" class="growth-dot"/>
+        <circle cx="210" cy="120" r="4" fill="var(--info)" class="growth-dot"/>
+        <circle cx="280" cy="94" r="4" fill="var(--info)" class="growth-dot"/>
+        <circle cx="350" cy="66" r="4" fill="var(--info)" class="growth-dot"/>
+        <!-- Legend -->
+        <line x1="290" y1="15" x2="310" y2="15" stroke="var(--accent)" stroke-width="2.5"/>
+        <text x="314" y="19" fill="var(--accent)" font-size="11" font-family="var(--font-mono)">Ao 1</text>
+        <line x1="345" y1="15" x2="365" y2="15" stroke="var(--info)" stroke-width="2.5"/>
+        <text x="369" y="19" fill="var(--info)" font-size="11" font-family="var(--font-mono)">Ao 2</text>
+      </svg>
+    </div>
+  </section>
+
+  <!-- Pond Status -->
+  <section class="section-card" data-od-id="pond-status">
+    <div class="section-header">
+      <span class="section-title">Tình trạng ao</span>
+      <span style="font-size:12px;color:var(--muted)">4 ao hoạt động</span>
+    </div>
+    <div class="section-body">
+      <div class="pond-grid">
+        <div class="pond-card">
+          <div class="pond-name">Ao 1 <span style="font-size:11px;color:var(--muted);font-weight:400">(Ương)</span></div>
+          <div class="pond-stat"><span class="label">Tôm</span><span style="font-family:var(--font-mono)">380,000</span></div>
+          <div class="pond-stat"><span class="label">Sống</span><span style="color:var(--warning)">76% ↓</span></div>
+          <div class="pond-stat"><span class="label">Ngày nuôi</span><span style="font-family:var(--font-mono)">45</span></div>
+          <div class="pond-stat"><span class="label">CP/con</span><span style="font-family:var(--font-mono)">138đ</span></div>
+          <div class="pond-stat"><span class="label">FCR</span><span class="fcr-badge fcr-good">1.35</span></div>
+        </div>
+        <div class="pond-card">
+          <div class="pond-name">Ao 2</div>
+          <div class="pond-stat"><span class="label">Tôm</span><span style="font-family:var(--font-mono)">145,000</span></div>
+          <div class="pond-stat"><span class="label">Sống</span><span>82%</span></div>
+          <div class="pond-stat"><span class="label">Ngày nuôi</span><span style="font-family:var(--font-mono)">30</span></div>
+          <div class="pond-stat"><span class="label">CP/con</span><span style="font-family:var(--font-mono)">195đ</span></div>
+          <div class="pond-stat"><span class="label">FCR</span><span class="fcr-badge fcr-warn">1.68</span></div>
+        </div>
+        <div class="pond-card">
+          <div class="pond-name">Ao 3</div>
+          <div class="pond-stat"><span class="label">Tôm</span><span style="font-family:var(--font-mono)">120,000</span></div>
+          <div class="pond-stat"><span class="label">Sống</span><span style="color:var(--danger)">71% ↓</span></div>
+          <div class="pond-stat"><span class="label">Ngày nuôi</span><span style="font-family:var(--font-mono)">30</span></div>
+          <div class="pond-stat"><span class="label">CP/con</span><span style="font-family:var(--font-mono)">220đ</span></div>
+          <div class="pond-stat"><span class="label">FCR</span><span class="fcr-badge fcr-bad">2.15</span></div>
+        </div>
+        <div class="pond-card">
+          <div class="pond-name">Ao 4</div>
+          <div class="pond-stat"><span class="label">Tôm</span><span style="font-family:var(--font-mono)">95,000</span></div>
+          <div class="pond-stat"><span class="label">Sống</span><span style="color:var(--success)">85%</span></div>
+          <div class="pond-stat"><span class="label">Ngày nuôi</span><span style="font-family:var(--font-mono)">28</span></div>
+          <div class="pond-stat"><span class="label">CP/con</span><span style="font-family:var(--font-mono)">175đ</span></div>
+          <div class="pond-stat"><span class="label">FCR</span><span class="fcr-badge fcr-good">1.40</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Alerts -->
+  <section class="section-card" data-od-id="alerts">
+    <div class="section-header">
+      <span class="section-title">Cảnh báo</span>
+      <span style="font-size:12px;color:var(--muted)">3 mục</span>
+    </div>
+    <div class="section-body">
+      <div class="alert-list">
+        <div class="alert-item danger">
+          <span class="alert-badge danger">HẾT HẠN</span>
+          <span>Lô #L003 Khoáng AquaMin — hết hạn 08/05 (còn 3 ngày)</span>
+        </div>
+        <div class="alert-item warning">
+          <span class="alert-badge warning">QUÁ HẠN</span>
+          <span>NCC Grobest — nợ 15tr quá 45 ngày</span>
+        </div>
+        <div class="alert-item info">
+          <span class="alert-badge info">GỢI Ý</span>
+          <span>Ao 3 FCR > 2.0 — kiểm tra lại lượng thức ăn</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- Bottom Navigation -->
+<nav class="bottom-nav" data-od-id="bottom-nav">
+  <div class="nav-item active">
+    <span class="nav-icon">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
+    </span>
+    <span>Dashboard</span>
+  </div>
+  <div class="nav-item" onclick="location.href='proto-issue.html'">
+    <span class="nav-icon">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+    </span>
+    <span>Xuất kho</span>
+  </div>
+  <div class="nav-item">
+    <span class="nav-icon">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>
+    </span>
+    <span>San tôm</span>
+  </div>
+  <div class="nav-item">
+    <span class="nav-icon">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-1-2.65M4 21v-2a4 4 0 011-2.65"/><rect x="2" y="7" width="20" height="5" rx="1"/><path d="M6 12v5M18 12v5"/></svg>
+    </span>
+    <span>Kho</span>
+  </div>
+  <div class="nav-item">
+    <span class="nav-icon">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </span>
+    <span>Menu</span>
+  </div>
+</nav>
+
+<script>
+function switchChartTab(el, period) {
+  el.parentElement.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+}
+function showBarDetail(el) {
+  const d = document.getElementById('barDetail');
+  const pond = el.dataset.pond;
+  d.style.display = 'block';
+  d.innerHTML = `<strong>${pond}</strong>: Thức ăn ${el.dataset.feed}tr · Thuốc ${el.dataset.med}tr · Khoáng ${el.dataset.min}tr · Vi sinh ${el.dataset.pro}tr`;
+}
+</script>
+</body>
+</html>

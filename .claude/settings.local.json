@@ -48,7 +48,30 @@
       "Bash(~/.bun/bin/gbrain config *)",
       "Bash(~/.bun/bin/gbrain sync *)",
       "Bash(~/.bun/bin/gbrain doctor *)",
-      "Bash(~/.bun/bin/gbrain embed *)"
+      "Bash(~/.bun/bin/gbrain embed *)",
+      "Skill(update-config)",
+      "mcp__gbrain__get_stats",
+      "Bash(~/.bun/bin/gbrain --version)",
+      "Bash(~/.bun/bin/gbrain init *)",
+      "Bash(find /c/Thai/tepbac/github/app_ke_toan/apps/*/app/api -type d)",
+      "mcp__gbrain__put_page",
+      "mcp__gbrain__add_link",
+      "Bash(rtk next *)",
+      "Bash(node node_modules/.bin/next build)",
+      "Bash(../../node_modules/.bin/next build *)",
+      "Bash(rtk npx *)",
+      "Bash(npx vercel *)",
+      "Bash(openssl rand *)",
+      "Bash(node *)",
+      "Bash(gh repo *)",
+      "WebFetch(domain:github.com)",
+      "Bash(rtk tree *)",
+      "Bash(pnpm --version)",
+      "Bash(npm install *)",
+      "Read(//c/Thai/tepbac/github/open-design/**)",
+      "Bash(rtk pnpm *)",
+      "Bash([ -d \"$HOME/.claude/skills/open-design\" ])",
+      "Bash(cmd.exe /c \"mklink /D \\\\\"C:\\\\\\\\Users\\\\\\\\thaip\\\\\\\\.claude\\\\\\\\skills\\\\\\\\open-design\\\\\" \\\\\"C:\\\\\\\\Thai\\\\\\\\tepbac\\\\\\\\github\\\\\\\\open-design\\\\\\\\skills\\\\\"\")"
     ]
   }
 }

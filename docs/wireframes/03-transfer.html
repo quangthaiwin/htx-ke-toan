@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wireframe — San Tôm + Transfer</title>
+<link href="https://fonts.googleapis.com/css2?family=Architects+Daughter&family=Caveat:wght@400;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Architects Daughter', cursive; background: #f9f7f2; color: #2d2d2d; padding: 16px; }
+.page-header h1 { font-family: 'Caveat', cursive; font-size: 2rem; font-weight: 700; display: inline-block; }
+.version-tag { display: inline-block; border: 2px dashed #666; padding: 2px 8px; font-size: 0.7rem; font-family: monospace; transform: rotate(-2deg); margin-left: 12px; }
+.subtitle { font-style: italic; color: #555; font-size: 0.9rem; margin-top: 4px; }
+.dateline { font-family: monospace; font-size: 0.7rem; color: #888; text-align: right; }
+.sketch-canvas { background: #fff; border: 3px solid #333; border-radius: 12px; padding: 16px; margin-top: 12px; background-image: linear-gradient(#e8e8e8 1px, transparent 1px), linear-gradient(90deg, #e8e8e8 1px, transparent 1px); background-size: 24px 24px; }
+.mode-toggle { display: flex; gap: 0; margin-bottom: 16px; }
+.mode-btn { flex: 1; padding: 10px; text-align: center; border: 2px solid #333; font-size: 0.85rem; }
+.mode-btn:first-child { border-radius: 8px 0 0 8px; }
+.mode-btn:last-child { border-radius: 0 8px 8px 0; border-left: none; }
+.mode-btn.active { background: #333; color: #fff; }
+.form-group { margin-bottom: 14px; }
+.form-label { font-size: 0.75rem; color: #555; margin-bottom: 4px; display: block; }
+.form-input { width: 100%; padding: 10px 12px; border: 2px solid #444; border-radius: 6px; font-family: inherit; font-size: 0.9rem; background: #fffef8; }
+.form-select { width: 100%; padding: 10px 12px; border: 2px solid #444; border-radius: 6px; font-family: inherit; font-size: 0.9rem; background: #fffef8; }
+.cost-preview { background: #fff3cd; border: 2px solid #ffc107; border-radius: 8px; padding: 12px; margin: 14px 0; }
+.cost-preview h3 { font-family: 'Caveat', cursive; font-size: 1.1rem; margin-bottom: 8px; }
+.cost-line { display: flex; justify-content: space-between; font-size: 0.8rem; padding: 3px 0; border-bottom: 1px dashed #ddd; }
+.dest-pond { display: flex; align-items: center; gap: 8px; padding: 10px; border: 1.5px solid #444; border-radius: 6px; margin-bottom: 8px; background: #fffef8; }
+.dest-pond input { width: 100px; padding: 6px 8px; border: 1.5px solid #444; border-radius: 4px; font-family: inherit; text-align: right; }
+.dest-pond .label { flex: 1; font-size: 0.85rem; }
+.btn-primary { width: 100%; padding: 14px; background: #333; color: #fff; border: none; border-radius: 8px; font-family: inherit; font-size: 1rem; margin-top: 12px; }
+.btn-add { display: block; width: 100%; padding: 10px; background: transparent; border: 2px dashed #999; border-radius: 6px; font-family: inherit; font-size: 0.85rem; color: #666; text-align: center; margin-bottom: 12px; }
+.approval-badge { display: inline-block; background: #dc3545; color: #fff; padding: 4px 10px; border-radius: 4px; font-size: 0.7rem; margin-top: 8px; }
+.section-divider { border: none; border-top: 2px dashed #ccc; margin: 24px 0; }
+.section-title { font-family: 'Caveat', cursive; font-size: 1.3rem; margin-bottom: 12px; }
+.sticky-note { padding: 8px 12px; font-size: 0.75rem; border-radius: 2px; box-shadow: 2px 2px 4px rgba(0,0,0,0.1); margin-top: 16px; background: #fff3a0; transform: rotate(-1deg); }
+.flow-diagram { display: flex; align-items: center; gap: 6px; font-size: 0.75rem; margin-bottom: 16px; flex-wrap: wrap; }
+.flow-step { background: #e8e8e8; padding: 4px 10px; border-radius: 4px; border: 1.5px solid #999; }
+.flow-step.current { background: #333; color: #fff; }
+.flow-arrow { color: #999; }
+</style>
+</head>
+<body>
+<div class="page-header">
+  <h1>San Tôm (Transfer)</h1><span class="version-tag">WIREFRAME v0.1</span>
+  <p class="subtitle">Split (1→N ao) + Merge (N→1 ao) — cascading cost preview</p>
+  <p class="dateline">Mobile 375px · /farm/transfer · 2026-05-05</p>
+</div>
+
+<div class="sketch-canvas">
+  <div class="mode-toggle">
+    <div class="mode-btn active">SPLIT (1 → nhiều ao)</div>
+    <div class="mode-btn">MERGE (nhiều → 1 ao)</div>
+  </div>
+
+  <!-- SPLIT MODE -->
+  <div data-od-id="split-form">
+    <div class="section-title">Split: Ao 1 → Phase 2</div>
+
+    <div class="flow-diagram">
+      <span class="flow-step current">Tạo draft</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-step">Manager đề xuất</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-step">Owner duyệt</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-step">Confirmed</span>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Ao nguồn (Phase hiện tại) *</label>
+      <select class="form-select">
+        <option>Ao 1 — Phase 1 "Ương" (380,000 con sống)</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Phase đích *</label>
+      <select class="form-select">
+        <option>Phase 2 "Nuôi thương phẩm" (bắt đầu 16/04)</option>
+      </select>
+    </div>
+
+    <div class="cost-preview" data-od-id="cost-preview">
+      <h3>💰 Cascading Cost Preview</h3>
+      <div class="cost-line"><span>Tổng CP Phase 1 (Ao 1):</span><b>55,000,000đ</b></div>
+      <div class="cost-line"><span>Tôm sống cuối phase:</span><b>380,000 con</b></div>
+      <div class="cost-line" style="border-bottom:2px solid #333"><span>seedCostPerUnit:</span><b style="color:#d63031">144.7đ/con</b></div>
+      <div style="font-size:0.7rem;color:#666;margin-top:6px;font-style:italic">
+        Formula: 55,000,000 ÷ 380,000 = 144.7đ/con
+      </div>
+    </div>
+
+    <label class="form-label">Ao đích (nhập số con mỗi ao) *</label>
+    <div class="dest-pond">
+      <span class="label">→ Ao 2</span>
+      <input type="number" value="150000" placeholder="con">
+      <span style="font-size:0.7rem;color:#666">= 21.7tr</span>
+    </div>
+    <div class="dest-pond">
+      <span class="label">→ Ao 3</span>
+      <input type="number" value="130000" placeholder="con">
+      <span style="font-size:0.7rem;color:#666">= 18.8tr</span>
+    </div>
+    <div class="dest-pond">
+      <span class="label">→ Ao 4</span>
+      <input type="number" value="100000" placeholder="con">
+      <span style="font-size:0.7rem;color:#666">= 14.5tr</span>
+    </div>
+    <button class="btn-add">+ Thêm ao đích</button>
+
+    <div style="font-size:0.8rem;background:#f8f9fa;padding:8px;border-radius:4px">
+      Tổng: 380,000 con ✓ (khớp ao nguồn)
+    </div>
+
+    <div class="approval-badge">⚠ Cần Owner duyệt trước khi confirmed</div>
+
+    <button class="btn-primary">📝 Tạo draft san tôm</button>
+  </div>
+
+  <hr class="section-divider">
+
+  <!-- MERGE MODE -->
+  <div data-od-id="merge-form">
+    <div class="section-title">Merge: Nhiều ao → 1 ao</div>
+
+    <div class="form-group">
+      <label class="form-label">Các ao nguồn (chọn nhiều) *</label>
+      <div class="dest-pond" style="background:#e8f5e9">
+        <input type="checkbox" checked> <span class="label">Ao 3 (50,000 con · CP: 25tr)</span>
+      </div>
+      <div class="dest-pond" style="background:#e8f5e9">
+        <input type="checkbox" checked> <span class="label">Ao 4 (40,000 con · CP: 20tr)</span>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Ao đích *</label>
+      <select class="form-select">
+        <option>Ao 5 (trống)</option>
+      </select>
+    </div>
+
+    <div class="cost-preview">
+      <h3>💰 Merge Cost Preview</h3>
+      <div class="cost-line"><span>Ao 3: 50K con × CP</span><b>25,000,000đ</b></div>
+      <div class="cost-line"><span>Ao 4: 40K con × CP</span><b>20,000,000đ</b></div>
+      <div class="cost-line" style="border-bottom:2px solid #333"><span>Ao 5 seedCostPerUnit:</span><b style="color:#d63031">500đ/con</b></div>
+      <div style="font-size:0.7rem;color:#666;margin-top:6px;font-style:italic">
+        (25tr + 20tr) ÷ (50K + 40K) = 500đ/con × 90K = 45,000,000đ
+      </div>
+    </div>
+
+    <button class="btn-primary">📝 Tạo draft merge</button>
+  </div>
+
+  <div class="sticky-note">
+    Flow: DRAFT → Manager đề xuất → Owner duyệt → CONFIRMED<br>
+    Khi confirmed: system auto tạo PondAssignment mới + ghi PondCostEntry (SEED)
+  </div>
+</div>
+
+<div style="position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:2px solid #333;display:flex;justify-content:space-around;padding:8px 0;font-size:0.65rem;text-align:center">
+  <div>📊<br>Dashboard</div>
+  <div>📦<br>Xuất kho</div>
+  <div style="font-weight:bold;color:#e17055">🔀<br>San tôm</div>
+  <div>🏪<br>Kho</div>
+  <div>☰<br>Menu</div>
+</div>
+<div style="height:60px"></div>
+</body>
+</html>

@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wireframe — Mua hàng + Kho + NCC + Thu hoạch + Growth + Mortality + Reports + Nav</title>
+<link href="https://fonts.googleapis.com/css2?family=Architects+Daughter&family=Caveat:wght@400;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Architects Daughter', cursive; background: #f9f7f2; color: #2d2d2d; padding: 16px; }
+h1 { font-family: 'Caveat', cursive; font-size: 1.8rem; }
+.version-tag { display: inline-block; border: 2px dashed #666; padding: 2px 8px; font-size: 0.7rem; font-family: monospace; transform: rotate(-2deg); margin-left: 8px; }
+.dateline { font-family: monospace; font-size: 0.7rem; color: #888; }
+.screen { background: #fff; border: 3px solid #333; border-radius: 12px; padding: 16px; margin: 20px 0; background-image: linear-gradient(#e8e8e8 1px, transparent 1px), linear-gradient(90deg, #e8e8e8 1px, transparent 1px); background-size: 24px 24px; }
+.screen-title { font-family: 'Caveat', cursive; font-size: 1.4rem; margin-bottom: 12px; padding-bottom: 6px; border-bottom: 2px solid #333; }
+.screen-route { font-family: monospace; font-size: 0.7rem; color: #888; float: right; }
+.form-group { margin-bottom: 12px; }
+.form-label { font-size: 0.72rem; color: #555; margin-bottom: 3px; display: block; }
+.form-input { width: 100%; padding: 8px 10px; border: 2px solid #444; border-radius: 6px; font-family: inherit; font-size: 0.85rem; background: #fffef8; }
+.form-select { width: 100%; padding: 8px 10px; border: 2px solid #444; border-radius: 6px; font-family: inherit; background: #fffef8; }
+.btn { padding: 10px 16px; border: 2px solid #333; border-radius: 6px; font-family: inherit; font-size: 0.85rem; cursor: pointer; }
+.btn-dark { background: #333; color: #fff; border: none; }
+.btn-outline { background: transparent; }
+.flow-steps { display: flex; gap: 4px; font-size: 0.7rem; margin-bottom: 12px; flex-wrap: wrap; }
+.flow-step { background: #eee; padding: 3px 8px; border-radius: 3px; border: 1px solid #ccc; }
+.flow-step.active { background: #333; color: #fff; }
+.flow-arrow { color: #999; }
+.table-sketch { width: 100%; border-collapse: collapse; font-size: 0.75rem; }
+.table-sketch th { background: #333; color: #fff; padding: 6px 8px; text-align: left; }
+.table-sketch td { padding: 6px 8px; border-bottom: 1px solid #ddd; }
+.table-sketch tr:nth-child(even) { background: #f9f9f9; }
+.badge { display: inline-block; padding: 2px 6px; border-radius: 3px; font-size: 0.6rem; }
+.badge-green { background: #d4edda; color: #155724; }
+.badge-yellow { background: #fff3cd; color: #856404; }
+.badge-red { background: #f8d7da; color: #721c24; }
+.badge-blue { background: #d1ecf1; color: #0c5460; }
+.sticky { padding: 8px 12px; font-size: 0.72rem; border-radius: 2px; margin-top: 12px; box-shadow: 2px 2px 4px rgba(0,0,0,0.08); }
+.sticky-y { background: #fff3a0; transform: rotate(-0.8deg); }
+.sticky-p { background: #ffcccc; transform: rotate(1deg); }
+.aging-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin: 12px 0; text-align: center; font-size: 0.75rem; }
+.aging-cell { border: 1.5px solid #444; border-radius: 4px; padding: 8px 4px; }
+.aging-cell .amount { font-family: 'Caveat', cursive; font-size: 1.2rem; font-weight: 700; }
+.harvest-summary { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin: 12px 0; text-align: center; }
+.harvest-card { border: 2px solid #444; border-radius: 6px; padding: 10px; }
+.harvest-card .num { font-family: 'Caveat', cursive; font-size: 1.3rem; font-weight: 700; }
+.nav-desktop { display: flex; flex-direction: column; gap: 4px; }
+.nav-item { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 6px; font-size: 0.85rem; }
+.nav-item.active { background: #333; color: #fff; }
+.nav-item:not(.active) { border: 1.5px dashed #ccc; }
+</style>
+</head>
+<body>
+<div style="margin-bottom:16px">
+  <h1 style="display:inline">Farm Module — All Screens</h1><span class="version-tag">WIREFRAME v0.1</span>
+  <p class="dateline">Screens 04-12 · Mobile 375px · 2026-05-05</p>
+</div>
+
+<!-- SCREEN 4: Purchase -->
+<div class="screen" data-od-id="purchase">
+  <div class="screen-title">04. Mua hàng (Purchase) <span class="screen-route">/farm/purchase</span></div>
+  <div class="flow-steps">
+    <span class="flow-step active">PR (Draft)</span><span class="flow-arrow">→</span>
+    <span class="flow-step">Submitted</span><span class="flow-arrow">→</span>
+    <span class="flow-step">Approved</span><span class="flow-arrow">→</span>
+    <span class="flow-step">PO Sent</span><span class="flow-arrow">→</span>
+    <span class="flow-step">GRN Received</span>
+  </div>
+  <table class="table-sketch">
+    <tr><th>Mã</th><th>NCC</th><th>Tổng</th><th>Trạng thái</th></tr>
+    <tr><td>PR-001</td><td>Grobest</td><td>5,250,000đ</td><td><span class="badge badge-yellow">Chờ duyệt</span></td></tr>
+    <tr><td>PO-003</td><td>BioMin</td><td>3,800,000đ</td><td><span class="badge badge-blue">Đã gửi NCC</span></td></tr>
+    <tr><td>PO-002</td><td>Grobest</td><td>7,000,000đ</td><td><span class="badge badge-green">Đã nhận hàng</span></td></tr>
+  </table>
+  <div style="margin-top:12px;display:flex;gap:8px">
+    <button class="btn btn-dark">+ Tạo PR mới</button>
+    <button class="btn btn-outline">Duyệt PR</button>
+  </div>
+  <div class="sticky sticky-y">
+    PR Create: chọn sản phẩm + số lượng + đơn vị (BAO/KG)<br>
+    GRN: nhập lot mới (ngày SX, HSD, số lượng thực nhận)
+  </div>
+</div>
+
+<!-- SCREEN 5: Crops -->
+<div class="screen" data-od-id="crops">
+  <div class="screen-title">05. Quản lý Vụ/Ao <span class="screen-route">/farm/crops</span></div>
+  <div style="border:2px solid #444;border-radius:8px;padding:12px;margin-bottom:12px">
+    <div style="font-family:'Caveat',cursive;font-size:1.2rem;font-weight:700">VU-2026-01 "Vụ 1/2026"</div>
+    <div style="font-size:0.75rem;color:#666">01/03 → 15/07 · <span class="badge badge-green">ACTIVE</span></div>
+    <div style="margin-top:10px;padding-left:16px;border-left:3px solid #e17055">
+      <div style="font-size:0.85rem;font-weight:bold">Phase 1: Ương (01/03 - 15/04)</div>
+      <div style="font-size:0.75rem;padding-left:12px;margin-top:4px">└ Ao 1: 500K con → 380K sống</div>
+    </div>
+    <div style="margin-top:8px;padding-left:16px;border-left:3px solid #0984e3">
+      <div style="font-size:0.85rem;font-weight:bold">Phase 2: Nuôi thương phẩm (16/04 - now)</div>
+      <div style="font-size:0.75rem;padding-left:12px;margin-top:4px">
+        ├ Ao 2: 150K con<br>
+        ├ Ao 3: 130K con<br>
+        └ Ao 4: 100K con
+      </div>
+    </div>
+  </div>
+  <div style="display:flex;gap:8px">
+    <button class="btn btn-dark">+ Tạo vụ mới</button>
+    <button class="btn btn-outline">+ Phase</button>
+    <button class="btn btn-outline">+ Gán ao</button>
+  </div>
+</div>
+
+<!-- SCREEN 6: Lots/Inventory -->
+<div class="screen" data-od-id="lots">
+  <div class="screen-title">06. Tồn kho & Lot <span class="screen-route">/farm/lots</span></div>
+  <div style="display:flex;gap:8px;margin-bottom:12px">
+    <button class="btn btn-dark" style="font-size:0.75rem">Kho chính</button>
+    <button class="btn btn-outline" style="font-size:0.75rem">Kho tạm</button>
+    <button class="btn btn-outline" style="font-size:0.75rem">Chuyển kho</button>
+  </div>
+  <table class="table-sketch">
+    <tr><th>Sản phẩm</th><th>Lot</th><th>Tồn</th><th>HSD</th></tr>
+    <tr><td>Grobest #2</td><td>#L001</td><td>18.5 KG</td><td><span class="badge badge-green">15/06</span></td></tr>
+    <tr><td>Grobest #2</td><td>#L002</td><td>25 KG</td><td><span class="badge badge-green">20/07</span></td></tr>
+    <tr><td>Khoáng AquaMin</td><td>#L003</td><td>2.5 L</td><td><span class="badge badge-red">08/05 ⚠️</span></td></tr>
+    <tr><td>Vi sinh ProBio</td><td>#L004</td><td>3 CHAI</td><td><span class="badge badge-yellow">25/05</span></td></tr>
+  </table>
+  <div class="sticky sticky-p">
+    Stock Transfer: chọn lot → chuyển nguyên bao/chai từ Kho chính → Kho tạm<br>
+    FEFO enforce: lot gần hết hạn nhất phải xuất trước
+  </div>
+</div>
+
+<!-- SCREEN 7: Suppliers & AP -->
+<div class="screen" data-od-id="suppliers">
+  <div class="screen-title">07. NCC & Công nợ <span class="screen-route">/farm/suppliers</span></div>
+  <div class="aging-grid">
+    <div class="aging-cell"><div class="amount" style="color:#28a745">12tr</div><div>0-30 ngày</div></div>
+    <div class="aging-cell"><div class="amount" style="color:#ffc107">8tr</div><div>31-60</div></div>
+    <div class="aging-cell"><div class="amount" style="color:#fd7e14">15tr</div><div>61-90</div></div>
+    <div class="aging-cell"><div class="amount" style="color:#dc3545">10tr</div><div>>90 ⚠️</div></div>
+  </div>
+  <table class="table-sketch">
+    <tr><th>NCC</th><th>Tổng nợ</th><th>Quá hạn</th><th></th></tr>
+    <tr><td>Grobest</td><td>22,000,000đ</td><td><span class="badge badge-red">15tr</span></td><td><button class="btn" style="font-size:0.6rem;padding:3px 6px">Trả</button></td></tr>
+    <tr><td>BioMin</td><td>13,000,000đ</td><td><span class="badge badge-green">0</span></td><td><button class="btn" style="font-size:0.6rem;padding:3px 6px">Trả</button></td></tr>
+    <tr><td>AquaChem</td><td>10,000,000đ</td><td><span class="badge badge-yellow">10tr</span></td><td><button class="btn" style="font-size:0.6rem;padding:3px 6px">Trả</button></td></tr>
+  </table>
+  <div style="margin-top:10px;font-size:0.75rem">
+    Flow: GRN → Nợ tạm (ACCRUED) → Nhận HĐ → Đối chiếu (CONFIRMED) → Thanh toán (PAID)<br>
+    Trả lại hàng → Credit Note → Cấn trừ
+  </div>
+</div>
+
+<!-- SCREEN 8: Harvest -->
+<div class="screen" data-od-id="harvest">
+  <div class="screen-title">08. Thu hoạch <span class="screen-route">/farm/harvest</span></div>
+  <div class="harvest-summary">
+    <div class="harvest-card"><div class="num" style="color:#28a745">350tr</div><div style="font-size:0.7rem">Doanh thu</div></div>
+    <div class="harvest-card"><div class="num" style="color:#dc3545">285tr</div><div style="font-size:0.7rem">Tổng CP</div></div>
+    <div class="harvest-card"><div class="num" style="color:#007bff">65tr</div><div style="font-size:0.7rem">Lãi ✓</div></div>
+  </div>
+  <table class="table-sketch">
+    <tr><th>Ao</th><th>Kg</th><th>Size</th><th>Giá</th><th>Thành tiền</th></tr>
+    <tr><td>Ao 2</td><td>800</td><td>40c/kg</td><td>120K</td><td>96,000,000</td></tr>
+    <tr><td>Ao 2</td><td>500</td><td>35c/kg</td><td>130K</td><td>65,000,000</td></tr>
+    <tr><td>Ao 3</td><td>600</td><td>45c/kg</td><td>110K</td><td>66,000,000</td></tr>
+  </table>
+  <div style="margin-top:12px;display:flex;gap:8px">
+    <button class="btn btn-dark">+ Ghi thu hoạch</button>
+    <button class="btn btn-outline">Kết vụ</button>
+  </div>
+</div>
+
+<!-- SCREEN 9: Growth Sampling -->
+<div class="screen" data-od-id="growth">
+  <div class="screen-title">09. Cân mẫu (Growth) <span class="screen-route">Mobile form</span></div>
+  <div class="form-group">
+    <label class="form-label">Ao *</label>
+    <select class="form-select"><option>Ao 2 — Phase 2 (145K con)</option></select>
+  </div>
+  <div class="form-group">
+    <label class="form-label">Số con cân mẫu *</label>
+    <input class="form-input" type="number" value="15" placeholder="10-20 con">
+  </div>
+  <div class="form-group">
+    <label class="form-label">Gram trung bình/con *</label>
+    <input class="form-input" type="number" value="18.5" placeholder="gram">
+  </div>
+  <div style="background:#e8f5e9;border-radius:6px;padding:10px;font-size:0.8rem;margin:12px 0">
+    Biomass ước tính: 18.5g × 145,000 con = <b>2,682 kg</b><br>
+    FCR hiện tại: 3,800kg thức ăn ÷ 2,382kg tăng trọng = <b>1.60</b>
+  </div>
+  <button class="btn btn-dark" style="width:100%">✓ Lưu mẫu cân</button>
+</div>
+
+<!-- SCREEN 10: Mortality -->
+<div class="screen" data-od-id="mortality">
+  <div class="screen-title">10. Báo tôm chết <span class="screen-route">Mobile form</span></div>
+  <div class="form-group">
+    <label class="form-label">Ao *</label>
+    <select class="form-select"><option>Ao 3 — Phase 2 (120K con)</option></select>
+  </div>
+  <div class="form-group">
+    <label class="form-label">Số con chết *</label>
+    <input class="form-input" type="number" placeholder="VD: 500">
+  </div>
+  <div class="form-group">
+    <label class="form-label">Nguyên nhân</label>
+    <select class="form-select">
+      <option>Bệnh đốm trắng</option>
+      <option>Thiếu oxy</option>
+      <option>Thời tiết</option>
+      <option>Không rõ</option>
+    </select>
+  </div>
+  <div style="font-size:0.75rem;color:#666;margin:8px 0">
+    Sau khi lưu: shrimpCount ao 3 giảm từ 120K → 119.5K<br>
+    Tỷ lệ sống cập nhật: 71% → 70.6%
+  </div>
+  <button class="btn btn-dark" style="width:100%">✓ Ghi nhận</button>
+</div>
+
+<!-- SCREEN 11: Reports -->
+<div class="screen" data-od-id="reports">
+  <div class="screen-title">11. Báo cáo <span class="screen-route">/farm/reports</span></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">
+    <div style="border:2px solid #444;border-radius:6px;padding:10px;text-align:center">
+      <div style="font-size:1.5rem">📊</div>
+      <div style="font-size:0.8rem">So sánh CP ao/vụ</div>
+    </div>
+    <div style="border:2px solid #444;border-radius:6px;padding:10px;text-align:center">
+      <div style="font-size:1.5rem">💰</div>
+      <div style="font-size:0.8rem">Lãi/lỗ kết vụ</div>
+    </div>
+    <div style="border:2px solid #444;border-radius:6px;padding:10px;text-align:center">
+      <div style="font-size:1.5rem">📦</div>
+      <div style="font-size:0.8rem">XNT kho</div>
+    </div>
+    <div style="border:2px solid #444;border-radius:6px;padding:10px;text-align:center">
+      <div style="font-size:1.5rem">🛒</div>
+      <div style="font-size:0.8rem">Mua hàng</div>
+    </div>
+  </div>
+  <div style="font-size:0.75rem;color:#555">
+    Pivot table: Ao × Loại CP (FEED/MEDICINE/MINERAL...)<br>
+    Filter: theo vụ, theo thời gian, so sánh vụ trước vs vụ này
+  </div>
+</div>
+
+<!-- SCREEN 12: Navigation -->
+<div class="screen" data-od-id="navigation">
+  <div class="screen-title">12. Navigation <span class="screen-route">Sidebar + Bottom Nav</span></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+    <div>
+      <div style="font-size:0.8rem;font-weight:bold;margin-bottom:8px">Desktop Sidebar:</div>
+      <div class="nav-desktop">
+        <div class="nav-item active">📊 Dashboard</div>
+        <div class="nav-item">📦 Xuất kho</div>
+        <div class="nav-item">🔀 San tôm</div>
+        <div class="nav-item">🛒 Mua hàng</div>
+        <div class="nav-item">🌾 Vụ nuôi</div>
+        <div class="nav-item">🏪 Tồn kho</div>
+        <div class="nav-item">👥 NCC/Công nợ</div>
+        <div class="nav-item">🎣 Thu hoạch</div>
+        <div class="nav-item">📈 Báo cáo</div>
+      </div>
+    </div>
+    <div>
+      <div style="font-size:0.8rem;font-weight:bold;margin-bottom:8px">Mobile Bottom Nav:</div>
+      <div style="border:2px solid #333;border-radius:8px;padding:10px;display:flex;justify-content:space-around;text-align:center;font-size:0.65rem">
+        <div>📊<br>Home</div>
+        <div>📦<br>Xuất</div>
+        <div>🔀<br>San</div>
+        <div>🏪<br>Kho</div>
+        <div>☰<br>More</div>
+      </div>
+      <div style="margin-top:10px;font-size:0.72rem;color:#555">
+        "More" menu mở ra:<br>
+        • Mua hàng<br>
+        • Vụ nuôi<br>
+        • NCC/Công nợ<br>
+        • Thu hoạch<br>
+        • Cân mẫu<br>
+        • Báo tôm chết<br>
+        • Báo cáo<br>
+        • Cài đặt
+      </div>
+    </div>
+  </div>
+  <div class="sticky sticky-y" style="margin-top:12px">
+    Role-based: Worker chỉ thấy Xuất kho + Cân mẫu + Báo chết<br>
+    Purchaser: + Mua hàng<br>
+    Manager: + San tôm + Kho + Báo cáo<br>
+    Owner: tất cả + Kết vụ + Thanh toán NCC
+  </div>
+</div>
+
+</body>
+</html>

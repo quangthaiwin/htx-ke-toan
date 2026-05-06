@@ -1,0 +1,445 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Farm Dashboard — Desktop · VietERP</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f0f2f5;
+  --surface: #ffffff;
+  --fg: #1a1a2e;
+  --muted: #6b7280;
+  --border: #e5e7eb;
+  --accent: #e94560;
+  --success: #16a085;
+  --warning: #f39c12;
+  --danger: #e74c3c;
+  --info: #3498db;
+  --font-body: 'Inter', -apple-system, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --radius: 8px;
+  --shadow: 0 1px 3px rgba(0,0,0,0.06);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body { font-family: var(--font-body); background: var(--bg); color: var(--fg); font-size: 14px; line-height: 1.5; display: grid; grid-template-columns: 240px 1fr; grid-template-rows: 56px 1fr; }
+
+/* ─── Sidebar ─── */
+aside {
+  grid-row: 1 / -1;
+  background: var(--fg);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+}
+.sidebar-brand {
+  padding: 18px 20px;
+  font-weight: 700;
+  font-size: 16px;
+  letter-spacing: -0.01em;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.sidebar-crop {
+  padding: 10px 20px;
+  font-size: 11px;
+  font-family: var(--font-mono);
+  color: rgba(255,255,255,0.5);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.sidebar-nav { padding: 12px 10px; flex: 1; }
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  color: rgba(255,255,255,0.65);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  margin-bottom: 2px;
+}
+.nav-link:hover { background: rgba(255,255,255,0.06); color: #fff; }
+.nav-link.active { background: var(--accent); color: #fff; }
+.nav-link svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 1.8; flex-shrink: 0; }
+
+/* ─── Top Bar ─── */
+header {
+  grid-column: 2;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.page-title { font-size: 16px; font-weight: 600; }
+.topbar-right { display: flex; align-items: center; gap: 16px; }
+.search-box {
+  padding: 8px 14px 8px 34px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 13px;
+  width: 240px;
+  background: var(--bg) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='m21 21-4.3-4.3'/%3E%3C/svg%3E") no-repeat 10px center;
+}
+.search-box:focus { outline: none; border-color: var(--accent); }
+.user-avatar {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* ─── Main Content ─── */
+main {
+  grid-column: 2;
+  padding: 24px;
+  overflow-y: auto;
+}
+.kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+.kpi-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: var(--shadow);
+  transition: box-shadow 0.15s;
+}
+.kpi-card:hover { box-shadow: var(--shadow-md); }
+.kpi-label { font-size: 12px; color: var(--muted); font-weight: 500; margin-bottom: 8px; }
+.kpi-value { font-family: var(--font-mono); font-size: 28px; font-weight: 700; letter-spacing: -0.02em; }
+.kpi-delta { font-size: 12px; font-family: var(--font-mono); margin-top: 6px; }
+
+.charts-row { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; margin-bottom: 24px; }
+.chart-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 20px;
+}
+.chart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+.chart-title { font-size: 14px; font-weight: 600; }
+
+.pond-section { margin-bottom: 24px; }
+.pond-section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.pond-section-title { font-size: 14px; font-weight: 600; }
+.pond-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.pond-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 16px;
+  box-shadow: var(--shadow);
+  border-left: 3px solid var(--border);
+  transition: border-color 0.15s;
+  cursor: pointer;
+}
+.pond-card:hover { border-left-color: var(--accent); }
+.pond-card.alert { border-left-color: var(--danger); }
+.pond-name { font-weight: 600; margin-bottom: 10px; font-size: 14px; }
+.pond-stat { display: flex; justify-content: space-between; font-size: 12px; padding: 3px 0; }
+.pond-stat .lbl { color: var(--muted); }
+.pond-stat .val { font-family: var(--font-mono); }
+.fcr-badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-family: var(--font-mono); font-size: 12px; font-weight: 600; }
+.fcr-good { background: #d1fae5; color: #065f46; }
+.fcr-warn { background: #fef3c7; color: #92400e; }
+.fcr-bad { background: #fee2e2; color: #991b1b; }
+
+.alerts-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 20px;
+}
+.alert-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  margin-bottom: 6px;
+  cursor: pointer;
+  transition: filter 0.1s;
+}
+.alert-item:hover { filter: brightness(0.97); }
+.alert-item:last-child { margin-bottom: 0; }
+.alert-item.danger { background: #fee2e2; }
+.alert-item.warning { background: #fef3c7; }
+.alert-item.info { background: #ecfdf5; }
+.alert-badge {
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-family: var(--font-mono);
+  color: #fff;
+  white-space: nowrap;
+}
+.alert-badge.danger { background: var(--danger); }
+.alert-badge.warning { background: var(--warning); }
+.alert-badge.info { background: var(--success); }
+
+/* Chart inline styles */
+.bar-inline { display: flex; align-items: flex-end; gap: 20px; height: 200px; padding: 0 8px; }
+.bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; height: 100%; justify-content: flex-end; }
+.bar-stack { width: 100%; max-width: 48px; display: flex; flex-direction: column-reverse; border-radius: 4px 4px 0 0; overflow: hidden; }
+.bar-seg { min-height: 4px; }
+.bar-seg.s1 { background: var(--accent); }
+.bar-seg.s2 { background: var(--info); }
+.bar-seg.s3 { background: var(--success); }
+.bar-seg.s4 { background: #8b5cf6; }
+.bar-lbl { font-size: 11px; color: var(--muted); font-weight: 500; }
+.bar-val { font-size: 11px; font-family: var(--font-mono); color: var(--muted); }
+
+.legend-row { display: flex; gap: 16px; margin-top: 16px; }
+.legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); }
+.legend-dot { width: 10px; height: 10px; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<aside data-od-id="sidebar">
+  <div class="sidebar-brand">VietERP Farm</div>
+  <div class="sidebar-crop">VU-2026-01 · Phase 2 · Ngày 30</div>
+  <nav class="sidebar-nav">
+    <div class="nav-link active">
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
+      Dashboard
+    </div>
+    <div class="nav-link">
+      <svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>
+      Xuất kho
+    </div>
+    <div class="nav-link">
+      <svg viewBox="0 0 24 24"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/></svg>
+      San tôm
+    </div>
+    <div class="nav-link">
+      <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/></svg>
+      Mua hàng
+    </div>
+    <div class="nav-link">
+      <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 100 20 10 10 0 000-20z"/><path d="M2 12h20"/></svg>
+      Vụ nuôi
+    </div>
+    <div class="nav-link">
+      <svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="5" rx="1"/><path d="M6 12v5M18 12v5M4 22h16"/></svg>
+      Tồn kho
+    </div>
+    <div class="nav-link">
+      <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/></svg>
+      NCC / Công nợ
+    </div>
+    <div class="nav-link">
+      <svg viewBox="0 0 24 24"><path d="M12 2v20M2 12h20"/></svg>
+      Thu hoạch
+    </div>
+    <div class="nav-link">
+      <svg viewBox="0 0 24 24"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+      Báo cáo
+    </div>
+  </nav>
+</aside>
+
+<!-- Top Bar -->
+<header data-od-id="topbar">
+  <span class="page-title">Dashboard — Tổng quan trại</span>
+  <div class="topbar-right">
+    <input class="search-box" placeholder="Tìm ao, vật tư, NCC...">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2" style="cursor:pointer"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/></svg>
+    <div class="user-avatar">TP</div>
+  </div>
+</header>
+
+<!-- Main -->
+<main data-od-id="main-content">
+
+  <!-- KPI Row -->
+  <section class="kpi-row" data-od-id="kpi-row">
+    <div class="kpi-card">
+      <div class="kpi-label">Tổng CP vụ hiện tại</div>
+      <div class="kpi-value" style="color:var(--accent)">285tr</div>
+      <div class="kpi-delta" style="color:var(--danger)">↑ +12% vs vụ trước</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">FCR trung bình</div>
+      <div class="kpi-value" style="color:var(--success)">1.42</div>
+      <div class="kpi-delta"><span class="fcr-badge fcr-good">Tốt</span></div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Tỷ lệ sống TB</div>
+      <div class="kpi-value">78%</div>
+      <div class="kpi-delta" style="color:var(--muted)">400K / 510K con</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Công nợ NCC</div>
+      <div class="kpi-value" style="color:var(--warning)">45tr</div>
+      <div class="kpi-delta" style="color:var(--warning)">3 NCC · 2 quá hạn</div>
+    </div>
+  </section>
+
+  <!-- Charts Row -->
+  <section class="charts-row" data-od-id="charts">
+    <!-- Stacked Bar -->
+    <div class="chart-card">
+      <div class="chart-header">
+        <span class="chart-title">Chi phí phân loại theo ao</span>
+        <span style="font-size:12px;color:var(--muted);font-family:var(--font-mono)">Cả vụ · triệu VND</span>
+      </div>
+      <div class="bar-inline">
+        <div class="bar-col">
+          <div class="bar-val">93tr</div>
+          <div class="bar-stack" style="height:88%">
+            <div class="bar-seg s1" style="height:70%"></div>
+            <div class="bar-seg s2" style="height:15%"></div>
+            <div class="bar-seg s3" style="height:9%"></div>
+            <div class="bar-seg s4" style="height:6%"></div>
+          </div>
+          <span class="bar-lbl">Ao 1</span>
+        </div>
+        <div class="bar-col">
+          <div class="bar-val">72tr</div>
+          <div class="bar-stack" style="height:68%">
+            <div class="bar-seg s1" style="height:55%"></div>
+            <div class="bar-seg s2" style="height:20%"></div>
+            <div class="bar-seg s3" style="height:14%"></div>
+            <div class="bar-seg s4" style="height:11%"></div>
+          </div>
+          <span class="bar-lbl">Ao 2</span>
+        </div>
+        <div class="bar-col">
+          <div class="bar-val">68tr</div>
+          <div class="bar-stack" style="height:64%">
+            <div class="bar-seg s1" style="height:60%"></div>
+            <div class="bar-seg s2" style="height:18%"></div>
+            <div class="bar-seg s3" style="height:12%"></div>
+            <div class="bar-seg s4" style="height:10%"></div>
+          </div>
+          <span class="bar-lbl">Ao 3</span>
+        </div>
+        <div class="bar-col">
+          <div class="bar-val">52tr</div>
+          <div class="bar-stack" style="height:49%">
+            <div class="bar-seg s1" style="height:45%"></div>
+            <div class="bar-seg s2" style="height:19%"></div>
+            <div class="bar-seg s3" style="height:13%"></div>
+            <div class="bar-seg s4" style="height:23%"></div>
+          </div>
+          <span class="bar-lbl">Ao 4</span>
+        </div>
+      </div>
+      <div class="legend-row">
+        <span class="legend-item"><span class="legend-dot" style="background:var(--accent)"></span>Thức ăn</span>
+        <span class="legend-item"><span class="legend-dot" style="background:var(--info)"></span>Thuốc</span>
+        <span class="legend-item"><span class="legend-dot" style="background:var(--success)"></span>Khoáng</span>
+        <span class="legend-item"><span class="legend-dot" style="background:#8b5cf6"></span>Vi sinh</span>
+      </div>
+    </div>
+
+    <!-- Growth Curve -->
+    <div class="chart-card">
+      <div class="chart-header">
+        <span class="chart-title">Growth (g/con)</span>
+      </div>
+      <svg viewBox="0 0 240 160" style="width:100%;height:auto">
+        <line x1="30" y1="10" x2="30" y2="130" stroke="var(--border)" stroke-width="1"/>
+        <line x1="30" y1="130" x2="230" y2="130" stroke="var(--border)" stroke-width="1"/>
+        <line x1="30" y1="100" x2="230" y2="100" stroke="var(--border)" stroke-width="0.5" stroke-dasharray="3"/>
+        <line x1="30" y1="70" x2="230" y2="70" stroke="var(--border)" stroke-width="0.5" stroke-dasharray="3"/>
+        <line x1="30" y1="40" x2="230" y2="40" stroke="var(--border)" stroke-width="0.5" stroke-dasharray="3"/>
+        <text x="26" y="133" text-anchor="end" fill="var(--muted)" font-size="9" font-family="var(--font-mono)">0</text>
+        <text x="26" y="103" text-anchor="end" fill="var(--muted)" font-size="9" font-family="var(--font-mono)">10</text>
+        <text x="26" y="73" text-anchor="end" fill="var(--muted)" font-size="9" font-family="var(--font-mono)">20</text>
+        <text x="26" y="43" text-anchor="end" fill="var(--muted)" font-size="9" font-family="var(--font-mono)">30</text>
+        <polyline points="45,125 85,115 125,97 165,68 205,35" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <polyline points="45,126 85,119 125,105 165,82 205,60" fill="none" stroke="var(--info)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="205" cy="35" r="4" fill="var(--accent)"/>
+        <circle cx="205" cy="60" r="4" fill="var(--info)"/>
+        <text x="145" y="152" fill="var(--accent)" font-size="10" font-family="var(--font-mono)">Ao 1</text>
+        <text x="185" y="152" fill="var(--info)" font-size="10" font-family="var(--font-mono)">Ao 2</text>
+      </svg>
+    </div>
+  </section>
+
+  <!-- Pond Status -->
+  <section class="pond-section" data-od-id="pond-grid">
+    <div class="pond-section-header">
+      <span class="pond-section-title">Tình trạng ao + FCR</span>
+      <span style="font-size:12px;color:var(--muted)">4 ao hoạt động</span>
+    </div>
+    <div class="pond-grid">
+      <div class="pond-card">
+        <div class="pond-name">Ao 1 <span style="font-size:11px;color:var(--muted);font-weight:400">(Ương)</span></div>
+        <div class="pond-stat"><span class="lbl">Tôm</span><span class="val">380,000</span></div>
+        <div class="pond-stat"><span class="lbl">Sống</span><span class="val" style="color:var(--warning)">76% ↓</span></div>
+        <div class="pond-stat"><span class="lbl">Ngày</span><span class="val">45</span></div>
+        <div class="pond-stat"><span class="lbl">CP/con</span><span class="val">138đ</span></div>
+        <div class="pond-stat"><span class="lbl">FCR</span><span class="fcr-badge fcr-good">1.35</span></div>
+      </div>
+      <div class="pond-card">
+        <div class="pond-name">Ao 2</div>
+        <div class="pond-stat"><span class="lbl">Tôm</span><span class="val">145,000</span></div>
+        <div class="pond-stat"><span class="lbl">Sống</span><span class="val">82%</span></div>
+        <div class="pond-stat"><span class="lbl">Ngày</span><span class="val">30</span></div>
+        <div class="pond-stat"><span class="lbl">CP/con</span><span class="val">195đ</span></div>
+        <div class="pond-stat"><span class="lbl">FCR</span><span class="fcr-badge fcr-warn">1.68</span></div>
+      </div>
+      <div class="pond-card alert">
+        <div class="pond-name">Ao 3</div>
+        <div class="pond-stat"><span class="lbl">Tôm</span><span class="val">120,000</span></div>
+        <div class="pond-stat"><span class="lbl">Sống</span><span class="val" style="color:var(--danger)">71% ↓</span></div>
+        <div class="pond-stat"><span class="lbl">Ngày</span><span class="val">30</span></div>
+        <div class="pond-stat"><span class="lbl">CP/con</span><span class="val">220đ</span></div>
+        <div class="pond-stat"><span class="lbl">FCR</span><span class="fcr-badge fcr-bad">2.15</span></div>
+      </div>
+      <div class="pond-card">
+        <div class="pond-name">Ao 4</div>
+        <div class="pond-stat"><span class="lbl">Tôm</span><span class="val">95,000</span></div>
+        <div class="pond-stat"><span class="lbl">Sống</span><span class="val" style="color:var(--success)">85%</span></div>
+        <div class="pond-stat"><span class="lbl">Ngày</span><span class="val">28</span></div>
+        <div class="pond-stat"><span class="lbl">CP/con</span><span class="val">175đ</span></div>
+        <div class="pond-stat"><span class="lbl">FCR</span><span class="fcr-badge fcr-good">1.40</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Alerts -->
+  <section class="alerts-card" data-od-id="alerts">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+      <span class="chart-title">Cảnh báo</span>
+      <span style="font-size:12px;color:var(--muted)">3 mục cần xử lý</span>
+    </div>
+    <div class="alert-item danger">
+      <span class="alert-badge danger">HẾT HẠN</span>
+      <span>Lô #L003 Khoáng AquaMin — hết hạn 08/05 (còn 3 ngày)</span>
+    </div>
+    <div class="alert-item warning">
+      <span class="alert-badge warning">QUÁ HẠN</span>
+      <span>NCC Grobest — nợ 15,000,000đ quá 45 ngày</span>
+    </div>
+    <div class="alert-item info">
+      <span class="alert-badge info">GỢI Ý</span>
+      <span>Ao 3 FCR > 2.0 — kiểm tra lại lượng thức ăn, giảm 10-15%</span>
+    </div>
+  </section>
+
+</main>
+</body>
+</html>

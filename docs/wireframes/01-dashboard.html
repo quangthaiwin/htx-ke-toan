@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wireframe — Farm Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Architects+Daughter&family=Caveat:wght@400;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Architects Daughter', cursive; background: #f9f7f2; color: #2d2d2d; padding: 16px; min-height: 100vh; }
+.page-header { margin-bottom: 20px; position: relative; }
+.page-header h1 { font-family: 'Caveat', cursive; font-size: 2.2rem; font-weight: 700; display: inline-block; }
+.version-tag { display: inline-block; border: 2px dashed #666; padding: 2px 8px; font-size: 0.7rem; font-family: monospace; transform: rotate(-2deg); margin-left: 12px; vertical-align: top; }
+.subtitle { font-style: italic; color: #555; font-size: 1rem; margin-top: 4px; }
+.dateline { font-family: monospace; font-size: 0.7rem; color: #888; text-align: right; margin-top: -20px; }
+.tab-strip { display: flex; gap: 8px; margin-bottom: 16px; overflow-x: auto; padding-bottom: 4px; }
+.tab { padding: 6px 14px; border-radius: 4px; font-size: 0.85rem; cursor: pointer; white-space: nowrap; position: relative; }
+.tab.active { background: linear-gradient(135deg, #fff3a0 0%, #ffe066 100%); transform: rotate(-0.5deg); font-weight: bold; }
+.tab:not(.active) { background: #eee; color: #666; }
+.sketch-canvas { background: #fff; border: 3px solid #333; border-radius: 12px; padding: 16px; margin-bottom: 16px; position: relative; background-image: linear-gradient(#e8e8e8 1px, transparent 1px), linear-gradient(90deg, #e8e8e8 1px, transparent 1px); background-size: 24px 24px; }
+.browser-chrome { display: flex; align-items: center; gap: 6px; padding: 8px 12px; background: #f0f0f0; border-radius: 8px 8px 0 0; border: 2px solid #333; border-bottom: none; margin-bottom: -2px; }
+.dot { width: 10px; height: 10px; border-radius: 50%; border: 2px solid #666; }
+.url-bar { flex: 1; background: #fff; border: 1.5px solid #999; border-radius: 4px; padding: 3px 8px; font-family: monospace; font-size: 0.7rem; color: #666; }
+.kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 16px; }
+.kpi-card { border: 2px solid #444; border-radius: 8px; padding: 12px; text-align: center; transform: rotate(-0.3deg); background: #fffef8; }
+.kpi-number { font-family: 'Caveat', cursive; font-size: 2rem; font-weight: 700; color: #d63031; }
+.kpi-label { font-size: 0.75rem; color: #555; margin-top: 4px; }
+.kpi-accent { font-size: 0.6rem; background: #dfe6e9; padding: 2px 6px; border-radius: 3px; display: inline-block; margin-top: 4px; }
+.chart-card { border: 2px solid #444; border-radius: 8px; padding: 16px; margin-bottom: 16px; background: #fffef8; }
+.chart-title { font-family: 'Caveat', cursive; font-size: 1.2rem; margin-bottom: 12px; border-bottom: 1px dashed #ccc; padding-bottom: 4px; }
+.chart-placeholder { height: 160px; position: relative; overflow: hidden; }
+.axis-y { position: absolute; left: 0; top: 0; bottom: 20px; width: 2px; background: #333; }
+.axis-x { position: absolute; left: 0; right: 0; bottom: 20px; height: 2px; background: #333; }
+.axis-label { position: absolute; font-size: 0.6rem; font-family: monospace; color: #888; }
+.bar { position: absolute; bottom: 22px; border-radius: 3px 3px 0 0; }
+.bar-feed { background: repeating-linear-gradient(45deg, #e17055, #e17055 3px, #fab1a0 3px, #fab1a0 6px); }
+.bar-medicine { background: repeating-linear-gradient(-45deg, #0984e3, #0984e3 3px, #74b9ff 3px, #74b9ff 6px); }
+.bar-mineral { background: repeating-linear-gradient(45deg, #00b894, #00b894 3px, #55efc4 3px, #55efc4 6px); }
+.bar-probiotic { background: repeating-linear-gradient(-45deg, #6c5ce7, #6c5ce7 3px, #a29bfe 3px, #a29bfe 6px); }
+.line-chart { position: relative; height: 120px; }
+.wobbly-line { fill: none; stroke: #e17055; stroke-width: 2.5; stroke-linecap: round; }
+.wobbly-line2 { fill: none; stroke: #0984e3; stroke-width: 2.5; stroke-linecap: round; }
+.dot-marker { fill: #333; }
+.sticky-note { position: absolute; padding: 8px 12px; font-size: 0.75rem; border-radius: 2px; box-shadow: 2px 2px 4px rgba(0,0,0,0.1); z-index: 10; }
+.sticky-yellow { background: #fff3a0; transform: rotate(-2deg); }
+.sticky-pink { background: #ffcccc; transform: rotate(1.5deg); }
+.pond-status-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; }
+.pond-card { border: 2px solid #444; border-radius: 6px; padding: 10px; font-size: 0.8rem; background: #fffef8; }
+.pond-name { font-family: 'Caveat', cursive; font-size: 1.1rem; font-weight: 700; }
+.pond-stat { display: flex; justify-content: space-between; margin-top: 4px; font-size: 0.7rem; }
+.fcr-badge { display: inline-block; padding: 2px 6px; border-radius: 3px; font-size: 0.65rem; font-weight: bold; }
+.fcr-good { background: #d4edda; color: #155724; }
+.fcr-warn { background: #fff3cd; color: #856404; }
+.fcr-bad { background: #f8d7da; color: #721c24; }
+.section-title { font-family: 'Caveat', cursive; font-size: 1.4rem; margin: 16px 0 8px; border-left: 4px solid #e17055; padding-left: 8px; }
+.alert-row { display: flex; align-items: center; gap: 8px; padding: 6px 10px; background: #fff3cd; border-radius: 4px; margin-bottom: 6px; font-size: 0.75rem; border: 1px dashed #ffc107; }
+.alert-badge { background: #dc3545; color: #fff; padding: 1px 6px; border-radius: 3px; font-size: 0.6rem; }
+@media (max-width: 600px) { .kpi-grid { grid-template-columns: 1fr 1fr; } .pond-status-grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div data-od-id="header" class="page-header">
+  <h1>Farm Dashboard</h1><span class="version-tag">WIREFRAME v0.1</span>
+  <p class="subtitle">Trang tổng quan trại tôm — CP realtime + FCR + Growth</p>
+  <p class="dateline">Mobile PWA · 375px · Lo-fi · 2026-05-05</p>
+</div>
+
+<div data-od-id="tabs" class="tab-strip">
+  <span class="tab active">01 · DASHBOARD</span>
+  <span class="tab">02 · XUẤT KHO</span>
+  <span class="tab">03 · SAN TÔM</span>
+  <span class="tab">04 · MUA HÀNG</span>
+  <span class="tab">05 · VỤ/AO</span>
+</div>
+
+<div class="browser-chrome">
+  <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+  <div class="url-bar">app.vieterp.vn/farm</div>
+</div>
+
+<div data-od-id="sketch-canvas" class="sketch-canvas">
+
+  <div data-od-id="kpis" class="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-number">285tr</div>
+      <div class="kpi-label">Tổng CP vụ hiện tại</div>
+      <div class="kpi-accent">+12% vs vụ trước</div>
+    </div>
+    <div class="kpi-card" style="transform:rotate(0.4deg)">
+      <div class="kpi-number">1.42</div>
+      <div class="kpi-label">FCR trung bình</div>
+      <div class="kpi-accent"><span class="fcr-badge fcr-good">Tốt</span></div>
+    </div>
+    <div class="kpi-card" style="transform:rotate(-0.6deg)">
+      <div class="kpi-number">78%</div>
+      <div class="kpi-label">Tỷ lệ sống TB</div>
+      <div class="kpi-accent">400K/510K con</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-number">45tr</div>
+      <div class="kpi-label">Công nợ NCC</div>
+      <div class="kpi-accent">3 NCC · 2 quá hạn</div>
+    </div>
+  </div>
+
+  <div class="sticky-note sticky-yellow" style="top: 10px; right: 10px;" data-od-id="sticky-1">
+    Core value: CP/con tôm<br>realtime mỗi ao ↓
+  </div>
+
+  <div data-od-id="bar-chart" class="chart-card">
+    <div class="chart-title">Chi phí phân loại theo ao (Stacked Bar)</div>
+    <div class="chart-placeholder">
+      <div class="axis-y"></div>
+      <div class="axis-x"></div>
+      <span class="axis-label" style="left:4px;top:0">300tr</span>
+      <span class="axis-label" style="left:4px;top:40%">200tr</span>
+      <span class="axis-label" style="left:4px;top:80%">100tr</span>
+      <!-- Ao 1 -->
+      <div class="bar bar-feed" style="left:50px;width:36px;height:70%"></div>
+      <div class="bar bar-medicine" style="left:50px;width:36px;height:15%;bottom:calc(22px + 70%)"></div>
+      <div class="bar bar-mineral" style="left:50px;width:36px;height:8%;bottom:calc(22px + 85%)"></div>
+      <span class="axis-label" style="left:52px;bottom:2px">Ao 1</span>
+      <!-- Ao 2 -->
+      <div class="bar bar-feed" style="left:110px;width:36px;height:55%"></div>
+      <div class="bar bar-medicine" style="left:110px;width:36px;height:20%;bottom:calc(22px + 55%)"></div>
+      <div class="bar bar-mineral" style="left:110px;width:36px;height:10%;bottom:calc(22px + 75%)"></div>
+      <span class="axis-label" style="left:112px;bottom:2px">Ao 2</span>
+      <!-- Ao 3 -->
+      <div class="bar bar-feed" style="left:170px;width:36px;height:60%"></div>
+      <div class="bar bar-probiotic" style="left:170px;width:36px;height:18%;bottom:calc(22px + 60%)"></div>
+      <div class="bar bar-mineral" style="left:170px;width:36px;height:7%;bottom:calc(22px + 78%)"></div>
+      <span class="axis-label" style="left:172px;bottom:2px">Ao 3</span>
+      <!-- Ao 4 -->
+      <div class="bar bar-feed" style="left:230px;width:36px;height:45%"></div>
+      <div class="bar bar-medicine" style="left:230px;width:36px;height:12%;bottom:calc(22px + 45%)"></div>
+      <div class="bar bar-probiotic" style="left:230px;width:36px;height:15%;bottom:calc(22px + 57%)"></div>
+      <span class="axis-label" style="left:232px;bottom:2px">Ao 4</span>
+    </div>
+    <div style="display:flex;gap:12px;margin-top:8px;font-size:0.65rem;flex-wrap:wrap">
+      <span><span style="display:inline-block;width:12px;height:12px;background:repeating-linear-gradient(45deg,#e17055,#e17055 2px,#fab1a0 2px,#fab1a0 4px);border-radius:2px"></span> Thức ăn</span>
+      <span><span style="display:inline-block;width:12px;height:12px;background:repeating-linear-gradient(-45deg,#0984e3,#0984e3 2px,#74b9ff 2px,#74b9ff 4px);border-radius:2px"></span> Thuốc</span>
+      <span><span style="display:inline-block;width:12px;height:12px;background:repeating-linear-gradient(45deg,#00b894,#00b894 2px,#55efc4 2px,#55efc4 4px);border-radius:2px"></span> Khoáng</span>
+      <span><span style="display:inline-block;width:12px;height:12px;background:repeating-linear-gradient(-45deg,#6c5ce7,#6c5ce7 2px,#a29bfe 2px,#a29bfe 4px);border-radius:2px"></span> Vi sinh</span>
+    </div>
+  </div>
+
+  <div data-od-id="growth-chart" class="chart-card">
+    <div class="chart-title">Growth Curve (gram/con)</div>
+    <div class="line-chart">
+      <svg width="100%" height="100%" viewBox="0 0 300 120">
+        <line x1="30" y1="0" x2="30" y2="100" stroke="#333" stroke-width="1.5"/>
+        <line x1="30" y1="100" x2="290" y2="100" stroke="#333" stroke-width="1.5"/>
+        <text x="5" y="15" font-size="8" fill="#888" font-family="monospace">30g</text>
+        <text x="5" y="55" font-size="8" fill="#888" font-family="monospace">15g</text>
+        <text x="5" y="98" font-size="8" fill="#888" font-family="monospace">0g</text>
+        <polyline class="wobbly-line" points="35,95 70,88 110,75 150,60 190,42 230,28 270,18"/>
+        <polyline class="wobbly-line2" points="35,96 70,90 110,80 150,68 190,55 230,45 270,38"/>
+        <circle class="dot-marker" cx="110" cy="75" r="3"/>
+        <circle class="dot-marker" cx="190" cy="42" r="3"/>
+        <circle class="dot-marker" cx="270" cy="18" r="3"/>
+        <circle class="dot-marker" cx="150" cy="68" r="3" fill="#0984e3"/>
+        <text x="240" y="15" font-size="7" fill="#e17055">Ao 1</text>
+        <text x="240" y="42" font-size="7" fill="#0984e3">Ao 2</text>
+      </svg>
+    </div>
+  </div>
+
+  <div class="section-title">Tình trạng ao + FCR</div>
+  <div data-od-id="pond-status" class="pond-status-grid">
+    <div class="pond-card">
+      <div class="pond-name">Ao 1 (Ương)</div>
+      <div class="pond-stat"><span>Tôm:</span><span>380,000 con</span></div>
+      <div class="pond-stat"><span>Sống:</span><span>76% ↓</span></div>
+      <div class="pond-stat"><span>Ngày nuôi:</span><span>45 ngày</span></div>
+      <div class="pond-stat"><span>CP/con:</span><span>138đ</span></div>
+      <div class="pond-stat"><span>FCR:</span><span class="fcr-badge fcr-good">1.35</span></span></div>
+    </div>
+    <div class="pond-card" style="transform:rotate(0.3deg)">
+      <div class="pond-name">Ao 2</div>
+      <div class="pond-stat"><span>Tôm:</span><span>145,000 con</span></div>
+      <div class="pond-stat"><span>Sống:</span><span>82%</span></div>
+      <div class="pond-stat"><span>Ngày nuôi:</span><span>30 ngày</span></div>
+      <div class="pond-stat"><span>CP/con:</span><span>195đ</span></div>
+      <div class="pond-stat"><span>FCR:</span><span class="fcr-badge fcr-warn">1.68</span></span></div>
+    </div>
+    <div class="pond-card" style="transform:rotate(-0.4deg)">
+      <div class="pond-name">Ao 3</div>
+      <div class="pond-stat"><span>Tôm:</span><span>120,000 con</span></div>
+      <div class="pond-stat"><span>Sống:</span><span>71% ⚠️</span></div>
+      <div class="pond-stat"><span>Ngày nuôi:</span><span>30 ngày</span></div>
+      <div class="pond-stat"><span>CP/con:</span><span>220đ</span></div>
+      <div class="pond-stat"><span>FCR:</span><span class="fcr-badge fcr-bad">2.15</span></span></div>
+    </div>
+    <div class="pond-card">
+      <div class="pond-name">Ao 4</div>
+      <div class="pond-stat"><span>Tôm:</span><span>95,000 con</span></div>
+      <div class="pond-stat"><span>Sống:</span><span>85%</span></div>
+      <div class="pond-stat"><span>Ngày nuôi:</span><span>28 ngày</span></div>
+      <div class="pond-stat"><span>CP/con:</span><span>175đ</span></div>
+      <div class="pond-stat"><span>FCR:</span><span class="fcr-badge fcr-good">1.40</span></span></div>
+    </div>
+  </div>
+
+  <div class="section-title">Cảnh báo</div>
+  <div data-od-id="alerts">
+    <div class="alert-row"><span class="alert-badge">HẾT HẠN</span> Lô #L003 Khoáng Aqua — hết hạn 08/05 (còn 3 ngày)</div>
+    <div class="alert-row"><span class="alert-badge">QUÁ HẠN</span> NCC Grobest — nợ 15tr quá 45 ngày</div>
+    <div class="alert-row" style="background:#d4edda;border-color:#28a745"><span style="background:#28a745;color:#fff;padding:1px 6px;border-radius:3px;font-size:0.6rem">GỢI Ý</span> Ao 3 FCR > 2.0 — kiểm tra lại lượng thức ăn</div>
+  </div>
+
+  <div class="sticky-note sticky-pink" style="position:relative; margin-top:16px;" data-od-id="sticky-2">
+    Mobile: bottom nav 5 icons<br>
+    Dashboard | Xuất kho | San tôm | Kho | Menu
+  </div>
+</div>
+
+<!-- Mobile Bottom Nav -->
+<div style="position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:2px solid #333;display:flex;justify-content:space-around;padding:8px 0;font-size:0.65rem;text-align:center">
+  <div style="font-weight:bold;color:#e17055">📊<br>Dashboard</div>
+  <div>📦<br>Xuất kho</div>
+  <div>🔀<br>San tôm</div>
+  <div>🏪<br>Kho</div>
+  <div>☰<br>Menu</div>
+</div>
+
+<div style="height:60px"></div>
+</body>
+</html>
