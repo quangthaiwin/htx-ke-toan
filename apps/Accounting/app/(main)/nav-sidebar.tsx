@@ -62,6 +62,21 @@ const NAV: NavEntry[] = [
       { label: "Khách hàng / NCC", href: "/master/counterparties" },
     ],
   },
+  {
+    group: "Nuôi tôm",
+    icon: "🦐",
+    items: [
+      { label: "Dashboard", href: "/farm" },
+      { label: "Xuất kho", href: "/farm/issue" },
+      { label: "San tôm", href: "/farm/transfer" },
+      { label: "Mua hàng", href: "/farm/purchase" },
+      { label: "Vụ nuôi", href: "/farm/crops" },
+      { label: "Tồn kho", href: "/farm/lots" },
+      { label: "NCC / Công nợ", href: "/farm/suppliers" },
+      { label: "Thu hoạch", href: "/farm/harvest" },
+      { label: "Báo cáo", href: "/farm/reports" },
+    ],
+  },
 ];
 
 export function NavSidebar() {
