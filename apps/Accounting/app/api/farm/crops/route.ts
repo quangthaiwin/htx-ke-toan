@@ -5,22 +5,30 @@ const prisma = new PrismaClient();
 const TENANT_ID = process.env.TENANT_ID ?? "HTX_DEFAULT";
 
 export async function GET() {
-  const crops = await prisma.cropCycle.findMany({
-    where: { tenantId: TENANT_ID },
-    include: {
-      phases: {
-        orderBy: { phaseNumber: "asc" },
-        include: {
-          ponds: {
-            where: { status: "ACTIVE" },
-            include: { pond: true },
+  try {
+    const crops = await prisma.cropCycle.findMany({
+      where: { tenantId: TENANT_ID },
+      include: {
+        phases: {
+          orderBy: { phaseNumber: "asc" },
+          include: {
+            ponds: {
+              where: { status: "ACTIVE" },
+              include: { pond: true },
+            },
           },
         },
       },
-    },
-    orderBy: { startDate: "desc" },
-  });
-  return NextResponse.json(crops);
+      orderBy: { startDate: "desc" },
+    });
+    return NextResponse.json(crops);
+  } catch (error) {
+    console.error("[farm/crops] GET error:", error);
+    return NextResponse.json(
+      { error: "INTERNAL", message: "Lỗi tải dữ liệu vụ nuôi" },
+      { status: 500 },
+    );
+  }
 }
 
 export async function POST(req: NextRequest) {

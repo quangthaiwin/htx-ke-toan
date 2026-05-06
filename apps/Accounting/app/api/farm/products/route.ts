@@ -5,12 +5,22 @@ const prisma = new PrismaClient();
 const TENANT_ID = process.env.TENANT_ID ?? "HTX_DEFAULT";
 
 export async function GET() {
-  const products = await prisma.farmProduct.findMany({
-    where: { tenantId: TENANT_ID, isActive: true },
-    include: { lots: { where: { status: { in: ["AVAILABLE", "EXPIRING"] } } } },
-    orderBy: { name: "asc" },
-  });
-  return NextResponse.json(products);
+  try {
+    const products = await prisma.farmProduct.findMany({
+      where: { tenantId: TENANT_ID, isActive: true },
+      include: {
+        lots: { where: { status: { in: ["AVAILABLE", "EXPIRING"] } } },
+      },
+      orderBy: { name: "asc" },
+    });
+    return NextResponse.json(products);
+  } catch (error) {
+    console.error("[farm/products] GET error:", error);
+    return NextResponse.json(
+      { error: "INTERNAL", message: "Lỗi tải dữ liệu vật tư" },
+      { status: 500 },
+    );
+  }
 }
 
 export async function POST(req: NextRequest) {

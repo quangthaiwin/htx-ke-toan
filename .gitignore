@@ -51,3 +51,4 @@ rebrand-report.json
 .cache/
 .eslintcache
 .vercel
+.gstack/
